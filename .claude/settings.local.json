@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "matcher": "libby.*( --serpapi (auto|ask)| --source serpapi)",
+            "type": "prompt",
+            "message": "Serpapi uses API quota. Proceed?"
+          }
+        ]
+      }
+    ]
+  }
+}
