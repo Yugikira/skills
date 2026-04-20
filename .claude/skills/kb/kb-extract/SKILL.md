@@ -18,6 +18,33 @@ This skill is called by kb-ingest to extract structured knowledge from converted
 Orchestrator (read paper → create summary) → Verify Agent (check) → Orchestrator (revision)
 ```
 
+## Where to Find Concepts
+
+**Key sections for concept definitions**:
+1. **Introduction** - Authors introduce concepts and their importance
+2. **Hypothesis Development** - Explicit concept definitions for hypothesis testing
+3. **Literature Review** - Background definitions from prior work
+
+**If no explicit definition found**:
+- Provide a **common-sense definition** based on context
+- Mark with `[common-sense definition, not explicitly defined in paper]`
+
+## Concept Extraction Rules
+
+### KEEP ONLY Main Concepts
+- Focus on concepts central to the paper's hypotheses and findings
+- NOT every mentioned term or peripheral concepts
+
+### Separate Concepts from Constructs
+- **Concepts**: Abstract theoretical ideas (not directly observable)
+- **Constructs**: Multi-item measures that operationalize concepts
+- **Proxies/Variables**: Single computational measures
+
+**Example**:
+- Concept: "Managerial Labor Classifications" = a market where managers share similar talents
+- Constructs: Industry match, Compensation peer group match (measure if two managers are in same classification)
+- Proxies: `SameIndustry` = 1 if both firms in same SIC code, `PeerGroupMatch` = 1 if both in compensation peer group
+
 ## Summary Requirements
 
 ### Claimed Findings: 3-5 Key Interpretations FIRST
@@ -79,20 +106,41 @@ If Verify Agent says NO:
 - Add the missing variable definition
 - No interpretation changes, only operationalization clarity
 
-## Measures/Proxies Table Requirement
+## Table Requirements
 
-The table MUST have computational definitions:
+### Concepts Defined Table
 
-| Measure | For Concept | Computational Definition | Wiki Page |
-|---------|-------------|--------------------------|-----------|
-| PCOMP1 | Competition | First principal component of [InDegree, Clustering, Louvain_Density, Louvain_Size, Eigenvector] | [[proxies/PCOMP1]] |
+Link concepts to their constructs (operationalizations):
 
-Ground Truth findings can reference this table: "PCOMP1 (see Measures table) has β=..."
+| Concept | Definition | Constructs | Wiki Page |
+|---------|------------|------------|-----------|
+| Managerial Labor Classifications | A market where managers share similar talents | Industry match, Compensation peer group match | [[concepts/Managerial_Labor_Classifications]] |
+| Tournament Incentive | Outside employment opportunity incentives | Job change events, External compensation offers | [[concepts/Tournament_Incentive]] |
+
+**Rules**:
+- Definition should be the **abstract theoretical idea**, NOT the measure
+- Constructs are multi-item measures that operationalize the concept
+- If paper lacks explicit definition, provide common-sense definition with `[common-sense]` marker
+
+### Measures/Proxies Table
+
+Link proxies to constructs and concepts with computational definitions:
+
+| Measure | Constructs | Concept | Computational Definition | Wiki Page |
+|---------|------------|---------|--------------------------|-----------|
+| SameIndustry | Industry match | Managerial Labor Classifications | 1 if both firms in same 4-digit SIC code | [[proxies/SameIndustry]] |
+| PeerGroupMatch | Compensation peer group match | Managerial Labor Classifications | 1 if both firms appear in same compensation peer group | [[proxies/PeerGroupMatch]] |
+
+**Rules**:
+- Computational Definition must be **exact formula or operational rule** from paper
+- Link measure → construct → concept to show the operationalization chain
+
+Ground Truth findings can reference this table: "SameIndustry (see Measures table) has β=..."
 
 ## Wiki Creation (Orchestrator's Job)
 
 After summary finalized:
-1. For Concepts table → create/update `wiki/concepts/{concept}.md`
+1. For Concepts table → create/update `wiki/concepts/{concept}.md` (include Constructs section)
 2. For Measures table → create/update `wiki/proxies/{proxy}.md`
 3. For Methods → create/update `wiki/methods/{method}.md`
 

@@ -7,26 +7,54 @@ first_defined: [[source/summary/{citekey}]]
 # {Concept Name}
 
 ## Definition
-{Clear, precise definition of the concept}
+{Clear, precise definition of the abstract theoretical idea}
+
+> **Key Paper**: [[source/summary/{citekey}]] - {original source, typically from top 5 journal}
 
 ## Alternative Definitions
-> How other papers define this concept differently
+{Brief summary: how definitions vary across traditions/papers, key debate if any}
 
-- [[source/summary/{citekey}]]: "{alternative definition}"
+| Definition | Source | Note |
+|------------|--------|------|
+| "{alternative definition}" | [[source/summary/{citekey}]] | {context or tradition} |
+
+## Constructs & Measures
+{Brief summary: primary operationalization approach, most widely used construct/proxy}
+
+| Construct | Proxy | Computational Definition | Key Paper |
+|----------|-------|--------------------------|-----------|
+| {construct} | {proxy} | {exact formula} | [[source/summary/{citekey}]] |
 
 ## Related Theories
+{Brief summary: which theoretical frameworks ground this concept}
+
 - [[theories/{theory1}]] - {brief relationship note}
 
-## Common Proxies/Measures
-| Proxy | Description | Validity Notes | Papers Using |
-|-------|-------------|----------------|--------------|
-| [[proxies/{proxy1}]] | {brief desc} | {validity} | [[source/summary/{p1}]] |
+## Determinants of {Concept}
+{Brief summary: main factors that cause variation, most established determinant}
 
-## Papers Defining This Concept
-- [[source/summary/{citekey}]] - {definition note}
+| Determinant | Mechanism | Key Paper | Finding |
+|-------------|-----------|-----------|---------|
+| {determinant} | {how it affects concept} | [[source/summary/{citekey}]] | {key result} |
 
-## Papers Using This Concept
-- [[source/summary/{citekey}]] - {usage note}
+## Economic Consequences of {Concept}
+{Brief summary: primary outcomes affected, most documented consequence}
+
+| Consequence | Mechanism | Key Paper | Finding |
+|-------------|-----------|-----------|---------|
+| {consequence} | {how concept affects outcome} | [[source/summary/{citekey}]] | {key result} |
+
+## Identification Strategy
+{Brief summary: common causal approaches, key assumptions required}
+
+| Strategy | Assumption | Key Paper | Note |
+|----------|------------|-----------|------|
+| {strategy} | {key assumption required} | [[source/summary/{citekey}]] | {validity concern or strength} |
+
+## Future Works
+{Brief summary: main research gap, promising direction}
+
+- **{open question}**: {why important, what's missing} (see [[source/summary/{citekey}]])
 
 ## See Also
-- [[concepts/{related-concept}]]
+- [[concepts/{related-concept}]] - {relationship}

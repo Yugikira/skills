@@ -57,12 +57,19 @@ For each paper:
 **Token-efficient**: Orchestrator creates summary, then Verify Agent checks.
 
 1. **Orchestrator creates summary** (read paper key sections directly):
+   - Read: **Introduction, Hypothesis Development, Literature Review** (for concept definitions)
    - Read: Abstract, Results tables, Variable Definitions (in context or appendix)
    - Create `source/summary/{citekey}_summary.md` using template
    - Include **3-5 key Claimed findings** FIRST (authors' interpretations)
    - Include **3-5 key Ground Truth findings** SECOND (empirical support)
    - **Correspondence**: Ground Truth Finding N should support Claim N
-   - Fill Measures table with computational definitions
+   - Fill **Concepts Defined table** with:
+     - Abstract theoretical definitions (NOT operationalizations)
+     - Link to constructs that operationalize each concept
+     - Mark undefined concepts with `[common-sense]`
+   - Fill **Measures/Proxies table** with:
+     - Computational definitions
+     - Chain: Measure → Construct → Concept
 
 2. **Dispatch Verify Agent** (Agent tool, general-purpose):
    - Agent reads summary only (not full paper)

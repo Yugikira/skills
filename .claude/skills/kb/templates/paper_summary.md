@@ -48,16 +48,23 @@ source: [[raw/papers/{citekey}/{citekey}.pdf]]
 - [Awaiting future papers]
 
 ## Concepts Defined
-| Concept | Definition | Wiki Page |
-|---------|------------|-----------|
-| {concept} | {brief definition} | [[concepts/{concept}]] |
+> **Concepts**: Abstract theoretical ideas (not directly observable).
+> **Constructs**: Multi-item measures that operationalize concepts.
+>
+> **Where to find**: Introduction, Hypothesis Development, Literature Review sections.
+> **If no explicit definition**: Provide common-sense definition with `[common-sense]` marker.
+
+| Concept | Definition | Constructs | Wiki Page |
+|---------|------------|------------|-----------|
+| {concept} | {abstract theoretical definition} | {construct names that operationalize it} | [[concepts/{concept}]] |
 
 ## Measures/Proxies
 > **Computational Definition required** - Findings can reference this table.
+> **Chain**: Measure → Construct → Concept
 
-| Measure | For Concept | Computational Definition | Wiki Page |
-|---------|-------------|--------------------------|-----------|
-| {proxy} | {concept} | {exact formula} | [[proxies/{proxy}]] |
+| Measure | Constructs | Concept | Computational Definition | Wiki Page |
+|---------|------------|---------|--------------------------|-----------|
+| {proxy} | {construct} | {concept} | {exact formula} | [[proxies/{proxy}]] |
 
 ## Methods
 {Brief methodology, sample, data sources}
