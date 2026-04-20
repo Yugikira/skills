@@ -59,8 +59,9 @@ For each paper:
 1. **Orchestrator creates summary** (read paper key sections directly):
    - Read: Abstract, Results tables, Variable Definitions (in context or appendix)
    - Create `source/summary/{citekey}_summary.md` using template
-   - Include **3-5 key Ground Truth findings** with variable definitions
-   - Include **3-5 key Claimed findings**
+   - Include **3-5 key Claimed findings** FIRST (authors' interpretations)
+   - Include **3-5 key Ground Truth findings** SECOND (empirical support)
+   - **Correspondence**: Ground Truth Finding N should support Claim N
    - Fill Measures table with computational definitions
 
 2. **Dispatch Verify Agent** (Agent tool, general-purpose):

@@ -20,12 +20,22 @@ Orchestrator (read paper → create summary) → Verify Agent (check) → Orches
 
 ## Summary Requirements
 
-### Ground Truth Findings: 3-5 Key Findings ONLY
+### Claimed Findings: 3-5 Key Interpretations FIRST
+
+Select the authors' **main theoretical claims**:
+- What they conclude from the empirical results
+- The story they tell about why results matter
+
+**Write Claims BEFORE Ground Truth** - this establishes the interpretive framework first.
+
+### Ground Truth Findings: 3-5 Key Findings SECOND
 
 Select the **most important** empirical results:
 - Main coefficients from primary regression tables
 - Key novel variables/measures from the paper
 - Statistically significant results (p<0.05 or better)
+
+**Correspondence Requirement**: The first N Ground Truth findings should directly support the N Claimed findings above. Finding 1 supports Claim 1, Finding 2 supports Claim 2, etc.
 
 DO NOT extract every finding. Quality over quantity.
 
@@ -41,12 +51,6 @@ Variable X (defined as [exact formula from paper context]) has coefficient β=YY
 - Use variable definitions from paper context (Results section, Variable Definitions, Model description)
 - NOT just variable names like "PCOMP1" - must include what it measures
 - If a proxy is defined once, subsequent findings can reference "see Finding N" or "see Measures table"
-
-### Claimed Findings: 3-5 Key Interpretations ONLY
-
-Select the authors' **main theoretical claims**:
-- What they conclude from the empirical results
-- The story they tell about why results matter
 
 ## Verify Agent Role
 

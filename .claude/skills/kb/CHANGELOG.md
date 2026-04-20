@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-04-20] - Section Reordering & Claim-Ground Truth Correspondence
+
+### Changed
+- **Section ordering**: Claimed Findings now appears BEFORE Ground Truth Findings in all templates and skills. This establishes the interpretive framework first, then provides empirical support.
+- **Correspondence requirement**: The first N Ground Truth findings should directly support the first N Claimed findings. Finding 1 supports Claim 1, Finding 2 supports Claim 2, etc.
+
+### Updated Files
+- `templates/paper_summary.md` - Reordered sections, added correspondence guidance
+- `kb-extract/SKILL.md` - Updated extraction order and added correspondence requirement
+- `kb-ingest/SKILL.md` - Updated summary creation instructions
+
+### Rationale
+Placing claims before evidence mirrors how scientific communication works - readers first understand *what* authors claim (the story), then verify *how* they support it (the data). The correspondence requirement creates a transparent chain from interpretation to empirical support.
+
+---
+
 ## [2026-04-17] - Token-Efficient Workflow & Simplified Ground Truth Protocol
 
 ### Changed

@@ -18,25 +18,29 @@ source: [[raw/papers/{citekey}/{citekey}.pdf]]
 ## Abstract Summary
 {2-3 sentence paraphrase}
 
+## Claimed Findings
+> **3-5 KEY INTERPRETATIONS** - Authors' main claims.
+>
+> **Important**: Claims should correspond to Ground Truth findings below. Claim N should be supported by Ground Truth Finding N.
+
+- Claim 1: {primary interpretation}
+- Claim 2: {secondary interpretation}
+- Claim 3: {third interpretation}
+
 ## Ground Truth Findings
 > **3-5 KEY FINDINGS ONLY** - Main empirical results with variable definitions.
 >
 > Format: "Variable X (defined as [formula]) has β=YY (p<ZZ) in [model] (n=XXXX)"
 >
+> **Correspondence**: The first N findings here should directly support the N claims above.
+>
 > If a variable is defined in Measures table or earlier finding, can reference it.
 
-- Finding 1: {key result with full definitions}
-- Finding 2: {key result - can reference Finding 1}
-- Finding 3: {key result}
+- Finding 1: {key result supporting Claim 1 - with full definitions}
+- Finding 2: {key result supporting Claim 2 - can reference Finding 1}
+- Finding 3: {key result supporting Claim 3}
 - Finding 4: {optional}
 - Finding 5: {optional}
-
-## Claimed Findings
-> **3-5 KEY INTERPRETATIONS** - Authors' main claims.
-
-- Claim 1: {primary interpretation}
-- Claim 2: {secondary interpretation}
-- Claim 3: {third interpretation}
 
 ## Other Interpretations
 > Alternative views from other papers.
