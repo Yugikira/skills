@@ -1,42 +1,33 @@
 ---
 name: Managerial Labor Market Competition
 domain: accounting
-first_defined: [[source/summary/gao_2026_aggregated_compensation_peer]]
+first_used: [[source/summary/gao_2026_aggregated_compensation_peer_summary]]
 ---
 
 # Managerial Labor Market Competition
 
 ## Definition
-The extent of competition a firm faces in hiring and retaining executive talent. Two key theoretical constructs:
-- **Outside Opportunities** (Oyer 2004): Alternative employment options available to executives
-- **Talent Transferability** (Murphy and Zabojnik 2004, 2007): Degree to which executives' skills suit potential employers
+The intensity of competition for managerial talent among firms. Encompasses two key constructs: (1) Outside Opportunities - number of alternative employers, and (2) Talent Transferability - extent to which skills match other firms' needs.
 
-Firms face greater competition when executives have more outside opportunities and when their talents are more transferable.
+## Framework Components (adapted from Phillips 2013)
+1. **Labor Market Definition**: Top executives at U.S. public firms
+2. **Identification of Competitors**: Who are the competitors? → MLCs
+3. **Measurement of Competition**: How fierce? → Network-based measures
+4. **Type of Competition**: How firms compete (pay, equity, perks)
+5. **Consequences**: Talent loss, performance effects
 
-## Alternative Definitions
-> How other papers define this concept differently
+## Measurement Approach
+Network-based measures derived from compensation peer disclosures:
+- [[variables/Peer_Selection_Count]] - outside opportunities (local)
+- [[variables/Louvain_Group_Size]] - outside opportunities (broader)
+- [[variables/Peer_Clustering_Rate]] - transferability (local)
+- [[variables/Louvain_Group_Density]] - transferability (broader)
+- [[variables/Network_Centrality]] - transferability (broadest)
 
-- Prior literature approximated labor competition using product market competition measures (HHI, industry concentration). Gao & Lu (2026) argue these capture product market, not labor market dynamics.
+## Key Findings
+- [[source/summary/gao_2026_aggregated_compensation_peer_summary]]: Competition measures associated with higher pay, more equity, longer vesting; explains pay for luck and reduced RPE; tournament incentives from competition improve performance
 
-## Related Theories
-- [[theories/participation_constraints]] - Competition affects participation constraints in contracting (Oyer 2004)
-- [[theories/tournament_theory]] - Competition creates external tournament incentives
-- [[theories/competitive_assignment]] - Competition between firms leads to higher pay for higher productivity managers
-
-## Common Proxies/Measures
-| Proxy | Description | Validity Notes | Papers Using |
-|-------|-------------|----------------|--------------|
-| [[proxies/pcomp_competition_measures]] | Principal components of 5 network measures | Predicts retention tools (equity pay, pay duration); explains pay practices | [[source/summary/gao_2026_aggregated_compensation_peer]] |
-| [[proxies/indegree_competition]] | Number of times benchmarked | Higher InDegree = more outside opportunities | [[source/summary/gao_2026_aggregated_compensation_peer]] |
-| Product market HHI | Industry concentration | May capture product competition, not labor competition | Prior literature |
-
-## Papers Defining This Concept
-- [[source/summary/gao_2026_aggregated_compensation_peer]] - Develops network-based competition measures based on outside opportunities and talent transferability framework (adapted from Phillips 2013)
-
-## Papers Using This Concept
-- [[source/summary/gao_2026_aggregated_compensation_peer]] - Competition measures explain: (1) pay components, (2) pay for luck, (3) RPE use, (4) tournament incentives
-
-## See Also
-- [[concepts/outside_opportunities]] - Key theoretical construct
-- [[concepts/talent_transferability]] - Key theoretical construct
-- [[concepts/managerial_labor_classification]] - Identifies who are the competitors
+## Related Concepts
+- [[concepts/Outside_Opportunities]] - sub-component
+- [[concepts/Talent_Transferability]] - sub-component
+- [[concepts/Managerial_Labor_Classifications]] - identifies competitors
