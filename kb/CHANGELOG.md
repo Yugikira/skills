@@ -6,6 +6,70 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-04-22] - Hypothesis Section, Variable Naming, Methods Filtering
+
+### Added
+
+- **Hypothesis Section**: New section in paper summary template with argument structure analysis
+  - Premises table with Source and Type columns
+  - Reasoning approach: Deductive or Inductive classification
+  - Evaluation: Sound/Unsound (deductive), Cogent/Uncogent (inductive)
+- **kb-verify/SKILL.md**: New sub-skill for streamlined verification agent (YES/NO checks only)
+- **Scripts/check_related_papers.py**: New script for title-based matching of related papers against wiki database
+
+### Changed
+
+- **Variable naming**: Renamed "proxy" → "variable" across all templates and skills
+  - New table format: Paper Variable (exact name from paper) → Wiki Name (common-sense descriptive)
+  - Ground Truth findings use paper's exact variable names (honest to source)
+  - Wiki pages use descriptive names (e.g., InDegree → Peer_Selection_Count)
+- **Variable wiki filtering**: Only create wiki pages for directly measurable variables
+  - Create for: raw counts, indicators, ratios, network statistics
+  - Skip for: PCA components, constructed indices, fitted values, standardized variables
+- **Methods wiki filtering**: Skip standard econometric methods
+  - Skip: OLS, FE, RE, 2SLS, GMM, DiD, Regression Discontinuity (standard versions)
+  - Create: novel designs, analytical models, methodological contributions
+- **Related Papers section**: Changed from simple links to structured table format
+  - Columns: Authors, Year, Title, Relevance, Wiki Link
+  - Links only to papers already in wiki database
+- **kb-ingest workflow**: Updated Phase 3 to dispatch sub-agents
+  - kb-verify for verification (separate skill)
+  - Inline agents for hypothesis and references extraction
+- **Proxy Interpretations**: Limited to most valuable sources
+  - Max 5 interpretations total
+  - Oldest + Newest from Top journals per domain
+  - Top journals: Economics (AER, JPE, QJE, Econometrica, RES); Finance (JF, RFS, JFE, JFQA, RoF); Accounting (TAR, CAR, JAR, RAST, JAE)
+
+### Removed
+
+- **See Also sections**: Removed from theory.md and variable.md templates (not meaningful at this stage)
+
+### Updated Files
+
+- `templates/paper_summary.md` - Added Hypothesis section, updated Variables table format, Related Papers table
+- `templates/proxy.md` → `templates/variable.md` - Renamed, updated for directly measurable variables
+- `templates/theory.md` - Removed See Also section
+- `templates/concept.md` - Updated "Constructs & Measures" → "Constructs & Variables"
+- `kb-extract/SKILL.md` - Added Hypothesis extraction, Methods filtering, Variable naming guidelines
+- `kb-ingest/SKILL.md` - Updated workflow for sub-agent dispatch, variable/method wiki filtering
+- `kb-lint/SKILL.md` - Updated "proxies" → "variables"
+- `kb-verify/SKILL.md` - Created new verification skill
+- `Scripts/update_indexes.py` - Changed "proxies" → "variables" category
+- `Scripts/check_wikilinks.py` - Changed "proxies" → "variables" category
+- `Scripts/check_related_papers.py` - Created new script
+
+### Rationale
+
+User feedback led to these changes:
+1. Hypothesis analysis critical for academic work evaluation
+2. Variable names should be honest to paper (Ground Truth uses exact names)
+3. Wiki bloat from general methods and PCA components - now filtered
+4. "See Also" sections were not providing value at this stage
+5. Proxy Interpretations growing unbounded - limited to Top journal sources
+6. kb-ingest/kb-extract too lengthy - modularized with kb-verify sub-skill
+
+---
+
 ## [2026-04-20] - Concept-Construct-Proxy Separation
 
 ### Changed

@@ -60,7 +60,7 @@ def resolve_link_target(link: str, source_file: Path) -> Path:
         return ROOT_DIR / f"{target}.md"
     else:
         # Bare link like "market_efficiency" - check wiki categories
-        for category in ["concepts", "theories", "proxies", "methods"]:
+        for category in ["concepts", "theories", "variables", "methods"]:
             candidate = ROOT_DIR / "wiki" / category / f"{target}.md"
             if candidate.exists():
                 return candidate

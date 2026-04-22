@@ -18,12 +18,12 @@ first_defined: [[source/summary/{citekey}]]
 |------------|--------|------|
 | "{alternative definition}" | [[source/summary/{citekey}]] | {context or tradition} |
 
-## Constructs & Measures
-{Brief summary: primary operationalization approach, most widely used construct/proxy}
+## Constructs & Variables
+{Brief summary: primary operationalization approach, most widely used construct/variable}
 
-| Construct | Proxy | Computational Definition | Key Paper |
-|----------|-------|--------------------------|-----------|
-| {construct} | {proxy} | {exact formula} | [[source/summary/{citekey}]] |
+| Construct | Variable | Computational Definition | Key Paper |
+|----------|----------|--------------------------|-----------|
+| {construct} | {variable} | {exact formula} | [[source/summary/{citekey}_summary]] |
 
 ## Related Theories
 {Brief summary: which theoretical frameworks ground this concept}

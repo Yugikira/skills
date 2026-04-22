@@ -1,6 +1,6 @@
 ---
 name: kb-extract
-description: Internal helper skill that extracts concepts, theories, proxies, and methods from converted paper markdown. Called by kb-ingest, not invoked directly by user.
+description: Internal helper skill that extracts concepts, theories, variables from converted paper markdown. Called by kb-ingest, not invoked directly by user.
 ---
 
 # kb-extract - Knowledge Extraction Helper
@@ -11,11 +11,76 @@ This skill is called by kb-ingest to extract structured knowledge from converted
 
 **Token-minimized approach**:
 1. **Orchestrator** creates summary directly (reads paper once)
-2. **Verify Agent** provides simple yes/no feedback
+2. **kb-verify agent** provides simple YES/NO feedback (separate skill)
 3. **Orchestrator** revises if needed
 
 ```
-Orchestrator (read paper → create summary) → Verify Agent (check) → Orchestrator (revision)
+Orchestrator (read paper → create summary) → kb-verify (check) → Orchestrator (revision)
+```
+
+## Hypothesis Extraction
+
+### Where to Find Hypotheses
+- **Hypothesis Development section**: Explicit H1, H2 statements
+- **Introduction**: Research questions that imply hypotheses
+- **Theory section**: Propositions derived from theory
+
+### If No Explicit Hypothesis
+Write: "No explicit hypothesis stated in this paper. The paper is a {descriptive paper type: empirical exploration | descriptive analysis | methodological contribution}."
+
+### Argument Structure Analysis
+1. **Identify premises** (supporting evidence/claims for the hypothesis)
+2. **Classify each premise source**:
+   - Literature-based (prior findings)
+   - Theory-based (logical derivation)
+   - Assumption-based (taken as given)
+   - Data-based (empirical observation)
+3. **Determine reasoning approach**:
+   - **Deductive**: Conclusion necessarily follows (mathematical/logical certainty)
+   - **Inductive**: Conclusion probabilistically follows (empirical generalization)
+4. **Evaluate**:
+   - Deductive papers: **Sound** if valid AND all premises empirically true; **Unsound** otherwise
+   - Inductive papers: **Cogent** if strong AND all premises empirically true; **Uncogent** otherwise
+
+## Methods Filtering Criteria
+
+### SKIP - Do NOT create wiki/methods/ page for:
+
+**Standard econometric methods**:
+- OLS, Fixed Effects, Random Effects
+- Standard tests: t-tests, F-tests, Hausman tests, White tests
+
+**Standard causal identification methods**:
+- 2SLS (Two-stage least squares)
+- GMM (Generalized method of moments)
+- DiD (Difference-in-differences) - unless novel design setting
+- Regression Discontinuity - unless novel threshold/cutoff design
+
+**Standard data methods**:
+- Panel data construction, variable winsorization
+
+### CREATE wiki/methods/ page for:
+
+- **Analytical/model papers**: Full model specifications, assumptions, derivations, proofs
+- **Novel identification designs**: Unique research design settings for causality (e.g., novel instrument, novel DiD setting with special threshold)
+- **Novel methodological contributions**: New measurement approaches, new estimators, new tests
+- **Combined approaches**: Novel combinations of standard methods with unique twist
+
+### Methods Section in Summary
+
+**If using standard methods only**:
+```markdown
+## Methods
+- **Standard Methods**: OLS with Industry×Year fixed effects (no wiki page created)
+- **Data**: {data sources}, n={sample size}
+```
+
+**If novel design/model**:
+```markdown
+## Methods
+- **Novel Design**: {description of what makes it novel}
+- **Model**: {key equations or framework}
+→ Create wiki/methods/{method_name}.md
 ```
 
 ## Where to Find Concepts
@@ -68,80 +133,86 @@ DO NOT extract every finding. Quality over quantity.
 
 ### Ground Truth Format
 
-Each finding must be **reproducible**:
+Each finding must be **reproducible** - use the paper's actual variable names:
 
 ```
-Variable X (defined as [exact formula from paper context]) has coefficient β=YYY (p<ZZ) in [model type] regressing [dependent variable] on [independent variables] (n=XXXX).
+{Paper Variable Name} (defined as [exact formula from paper]) has coefficient β=YYY (p<ZZ) in [model type] (n=XXXX).
 ```
 
 **Key rules**:
-- Use variable definitions from paper context (Results section, Variable Definitions, Model description)
-- NOT just variable names like "PCOMP1" - must include what it measures
-- If a proxy is defined once, subsequent findings can reference "see Finding N" or "see Measures table"
+- Use **paper's exact variable names** (e.g., "PCOMP1", "InDegree") - be honest to the paper
+- Include computational definition from paper (Results section, Variable Definitions)
+- If a variable is defined once, subsequent findings can reference "see Finding N" or "see Variables table"
+- The Variables table maps paper names to common-sense wiki names
 
-## Verify Agent Role
+## Measures/Variables Filtering Criteria
 
-**Simple feedback format**:
+### Wiki Page Criteria
 
-```
-Finding 1: YES
-Finding 2: NO - uses abstract concept "competition" without computational definition
-Finding 3: YES
-Finding 4: NO - variable "MLCs" undefined, reader cannot verify
-```
+**CREATE wiki/variables/ page for** (directly measurable/basic):
+- **Raw counts**: Number of items (e.g., peer selections, employees, transactions)
+- **Indicators**: Binary variables (0/1 flags for observable events)
+- **Ratios from raw data**: Computable from observable inputs (e.g., proportions, percentages)
+- **Network statistics**: Directly computed from network structure (e.g., degree, clustering coefficient)
+- **Observable measurements**: Variables that can be directly counted/measured
 
-That's it. Just yes/no with one sentence reason for failures.
+**SKIP - NO wiki page for** (derived/composite):
+- **PCA components**: Principal components (e.g., PCOMP1, PCOMP2) - these are constructed indices
+- **Constructed indices**: Variables combining multiple measures through mathematical transformation
+- **Standardized variables**: Z-scores, normalized versions of other variables
+- **Fitted/predicted values**: Outputs from regression models (e.g., "Fitted Pay")
+- **Generic names**: Variables with non-descriptive names that could apply to any paper
 
-**What Verify Agent checks**:
-1. Is this an objective statistical observation (coefficient, p-value, n)?
-2. Are ALL variables defined with formulas (or referenced to earlier definition)?
-3. Can a reader verify this without external sources?
+### Variable Naming Guidelines
 
-**If referenced**: If Finding 2 says "PCOMP1 (see Finding 1)" and Finding 1 fully defines PCOMP1's components, that's YES.
+**Paper Variable** = exact name from paper (use in Ground Truth findings)
+**Wiki Name** = common-sense descriptive name (use in wiki page title)
 
-## Orchestrator Revision
+| Paper Variable | Wiki Name | Wiki Created? | Reason |
+|----------------|-----------|---------------|--------|
+| InDegree | Peer_Selection_Count | YES | Describes what it counts |
+| PCOMP1 | [derived] | NO | PCA component, not directly measurable |
+| Talent_Flow | Executive_Move | YES | Describes the observable event |
+| Eigenvector | Network_Centrality | YES | More descriptive of what it captures |
+| Clustering | Peer_Clustering_Rate | YES | Describes the ratio |
 
-If Verify Agent says NO:
-- Edit that finding directly
-- Add the missing variable definition
-- No interpretation changes, only operationalization clarity
+**Wiki naming rules**:
+1. Wiki Name should describe what the variable **directly measures**
+2. Use common terms that a reader can understand without context
+3. Include measurement type if helpful (Count, Rate, Indicator, Ratio)
+4. If no wiki page: Wiki Name = "[derived]" or "[composite]"
 
-## Table Requirements
+### Measures/Variables Table
 
-### Concepts Defined Table
+Map paper variable names to wiki names with computational definitions:
 
-Link concepts to their constructs (operationalizations):
+| Paper Variable | Wiki Name | Constructs | Concept | Computational Definition | Wiki Page |
+|----------------|-----------|------------|---------|--------------------------|-----------|
+| InDegree | Peer_Selection_Count | Network position | Outside Opportunities | Number of firms selecting focal firm as peer | [[variables/Peer_Selection_Count]] |
+| PCOMP1 | [derived] | Talent Transferability | Competition | First principal component of 5 measures | [no wiki] |
 
-| Concept | Definition | Constructs | Wiki Page |
-|---------|------------|------------|-----------|
-| Managerial Labor Classifications | A market where managers share similar talents | Industry match, Compensation peer group match | [[concepts/Managerial_Labor_Classifications]] |
-| Tournament Incentive | Outside employment opportunity incentives | Job change events, External compensation offers | [[concepts/Tournament_Incentive]] |
+**Columns explained**:
+- **Paper Variable**: Exact name used in the paper (honest to source) - use this in Ground Truth findings
+- **Wiki Name**: Common-sense descriptive name (if wiki page created) or "[derived]" if no wiki
+- **Wiki Page**: Link if directly measurable, "[no wiki]" if composite/constructed
 
 **Rules**:
-- Definition should be the **abstract theoretical idea**, NOT the measure
-- Constructs are multi-item measures that operationalize the concept
-- If paper lacks explicit definition, provide common-sense definition with `[common-sense]` marker
+- Computational Definition must be **exact formula or operational rule**
+- Ground Truth findings use **Paper Variable** names; wiki pages use **Wiki Name**
 
-### Measures/Proxies Table
-
-Link proxies to constructs and concepts with computational definitions:
-
-| Measure | Constructs | Concept | Computational Definition | Wiki Page |
-|---------|------------|---------|--------------------------|-----------|
-| SameIndustry | Industry match | Managerial Labor Classifications | 1 if both firms in same 4-digit SIC code | [[proxies/SameIndustry]] |
-| PeerGroupMatch | Compensation peer group match | Managerial Labor Classifications | 1 if both firms appear in same compensation peer group | [[proxies/PeerGroupMatch]] |
-
-**Rules**:
-- Computational Definition must be **exact formula or operational rule** from paper
-- Link measure → construct → concept to show the operationalization chain
-
-Ground Truth findings can reference this table: "SameIndustry (see Measures table) has β=..."
+Ground Truth findings reference paper names: "InDegree (see Variables table) has β=..." → wiki maps to Peer_Selection_Count
 
 ## Wiki Creation (Orchestrator's Job)
 
 After summary finalized:
-1. For Concepts table → create/update `wiki/concepts/{concept}.md` (include Constructs section)
-2. For Measures table → create/update `wiki/proxies/{proxy}.md`
-3. For Methods → create/update `wiki/methods/{method}.md`
 
-Use templates from `templates/`. Use Obsidian [[filename]] links.
+1. **Concepts** → create/update wiki/concepts/{concept}.md (include Constructs section)
+2. **Variables** → CHECK criteria before creating wiki/variables/{variable}.md:
+   - Create for: directly measurable/basic (raw counts, indicators, ratios, network stats)
+   - Skip for: derived/composite (PCA components, constructed indices)
+   - Use descriptive names (e.g., "Peer_Selection_Count" not "InDegree")
+3. **Methods** → CHECK criteria before creating wiki/methods/{method}.md:
+   - Create for: novel designs, analytical models, methodological contributions
+   - Skip for: standard methods (OLS, DiD, 2SLS, GMM, etc.)
+
+Use templates from templates/. Use Obsidian [[filename]] links.

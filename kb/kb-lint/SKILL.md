@@ -56,12 +56,12 @@ Process:
 
 ### Check 5: Contradictions (--contradictions focus)
 
-Find conflicting interpretations across papers using the same proxy.
+Find conflicting interpretations across papers using the same variable.
 
 Process:
-1. Read all proxy pages in `wiki/proxies/`
-2. For each proxy, examine Interpretations section
-3. Look for conflicting claims about what the proxy measures
+1. Read all variable pages in `wiki/variables/`
+2. For each variable, examine Interpretations section
+3. Look for conflicting claims about what the variable measures
 
 ### Check 6: Unpopularized Ground Truth
 
@@ -90,7 +90,7 @@ Process:
 ## Suggested Actions
 1. Create wiki/concepts/undefined_concept.md
 2. Add orphan to _index.md
-3. Review proxy for interpretation conflicts
+3. Review variable for interpretation conflicts
 ```
 
 ## Post-Lint Actions

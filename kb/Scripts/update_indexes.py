@@ -6,7 +6,7 @@ Usage:
     python Scripts/update_indexes.py [--dry-run]
 
 This script:
-    - Scans wiki/concepts/, wiki/theories/, wiki/proxies/, wiki/methods/
+    - Scans wiki/concepts/, wiki/theories/, wiki/variables/, wiki/methods/
     - Reads YAML frontmatter from each .md file for metadata
     - Generates _index.md with one-line summaries from frontmatter
     - Updates wiki/_index.md master index
@@ -89,7 +89,7 @@ def generate_category_index(category: str, pages: list) -> str:
     category_names = {
         "concepts": "Concepts",
         "theories": "Theories",
-        "proxies": "Proxies",
+        "variables": "Variables",
         "methods": "Methods"
     }
 
@@ -123,13 +123,13 @@ def generate_master_index(stats: dict) -> str:
         f"- Papers processed: See source/summary/ directory",
         f"- Concepts: {stats['concepts']}",
         f"- Theories: {stats['theories']}",
-        f"- Proxies: {stats['proxies']}",
+        f"- Variables: {stats['variables']}",
         f"- Methods: {stats['methods']}",
         "",
         "## Categories",
         "- [[concepts/_index]] - Concepts defined and used",
         "- [[theories/_index]] - Theoretical frameworks",
-        "- [[proxies/_index]] - Measures and proxies",
+        "- [[variables/_index]] - Measures and variables",
         "- [[methods/_index]] - Research methodologies",
         "",
         "## Recent Activity",
@@ -140,7 +140,7 @@ def generate_master_index(stats: dict) -> str:
 
 def update_indexes(dry_run: bool = False):
     """Update all index files."""
-    categories = ["concepts", "theories", "proxies", "methods"]
+    categories = ["concepts", "theories", "variables", "methods"]
     stats = {}
 
     for category in categories:

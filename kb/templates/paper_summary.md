@@ -58,20 +58,56 @@ source: [[raw/papers/{citekey}/{citekey}.pdf]]
 |---------|------------|------------|-----------|
 | {concept} | {abstract theoretical definition} | {construct names that operationalize it} | [[concepts/{concept}]] |
 
-## Measures/Proxies
-> **Computational Definition required** - Findings can reference this table.
-> **Chain**: Measure → Construct → Concept
+## Measures/Variables
+> **Paper Variable** = exact name from paper (use in Ground Truth findings)
+> **Wiki Name** = common-sense name (only for directly measurable variables)
+> **Wiki Creation**: Skip derived/composite (PCA, indices, fitted values)
 
-| Measure | Constructs | Concept | Computational Definition | Wiki Page |
-|---------|------------|---------|--------------------------|-----------|
-| {proxy} | {construct} | {concept} | {exact formula} | [[proxies/{proxy}]] |
+| Paper Variable | Wiki Name | Constructs | Concept | Computational Definition | Wiki Page |
+|----------------|-----------|------------|---------|--------------------------|-----------|
+| {paper_name} | {wiki_name} | {construct} | {concept} | {exact formula} | [[variables/{wiki_name}]] or [no wiki] |
+
+## Hypothesis
+> If no explicit hypothesis: write "No explicit hypothesis stated in this paper."
+>
+> **If hypothesis exists**, document the argument structure:
+
+### Hypothesis Statement
+{The paper's main hypothesis or research question}
+
+### Argument Structure
+> Premises intended to support the hypothesis.
+
+| Premise | Source | Type |
+|---------|--------|------|
+| {Premise 1} | {Literature/Theory/Data} | {Assumption/Observation/Claim} |
+| {Premise 2} | {source} | {type} |
+
+### Reasoning Approach
+- **Type**: [Deductive | Inductive] - Which approach the paper uses to form the hypothesis
+- **Relation**: [Valid (necessarily follows) | Strong (probabilistic support)] - Does the conclusion follow from premises?
+
+### Evaluation
+- **Status**: [Sound | Unsound | Cogent | Uncogent]
+- **Reason**: {why this evaluation}
+
+> **Criteria Reference**:
+> - Deductive: Sound = valid + all premises true with strong evidence; Unsound = else
+> - Inductive: Cogent = strong + all premises true; Uncogent = else
 
 ## Methods
 {Brief methodology, sample, data sources}
+
+> **Wiki Creation**: Only for novel designs/models. Skip standard methods (OLS, DiD, etc.).
 
 ## Limitations
 - {limitation 1}
 - {limitation 2}
 
 ## Related Papers
-- [[source/summary/{citekey}]] - {relevance}
+> **Process**: List key papers with relevance first. Enrich with full citations from paper's Reference section.
+> **Linking**: Link only to papers already in wiki database (checked via Scripts/check_related_papers.py).
+
+| Authors | Year | Title | Relevance | Wiki Link |
+|---------|------|-------|-----------|-----------|
+| {Author et al.} | {YYYY} | {Full Title} | {why related} | [[source/summary/{citekey}_summary]] or [not in wiki] |

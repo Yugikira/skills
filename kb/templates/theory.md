@@ -27,6 +27,3 @@ first_proposed: [[source/summary/{citekey}]]
 
 ## Applications
 {Practical applications}
-
-## See Also
-- [[methods/{method}]] - method to test this theory

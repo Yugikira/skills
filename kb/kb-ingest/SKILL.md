@@ -5,7 +5,7 @@ description: Main skill for ingesting academic papers into the Knowledge Base. O
 
 # kb-ingest - Paper Ingestion Pipeline
 
-Ingest academic papers into the Knowledge Base, extracting concepts, theories, proxies, and methods.
+Ingest academic papers into the Knowledge Base, extracting concepts, theories, variables, and methods.
 
 ## Usage Patterns
 
@@ -52,46 +52,73 @@ For each paper:
 2. If not, invoke paddle-pdf: `/paddle-pdf convert raw/papers/{citekey}/{citekey}.pdf -o raw/papers/{citekey}/`
 3. Verify output exists. Note: paddle-pdf automatically names output as `{citekey}.md` (not `output.md`)
 
-### Phase 3: Summary Creation (Orchestrator Directly)
+### Phase 3: Summary Creation (Orchestrator + Sub-agents)
 
-**Token-efficient**: Orchestrator creates summary, then Verify Agent checks.
+**Token-efficient workflow**: Orchestrator creates summary, sub-agents verify and enrich.
 
-1. **Orchestrator creates summary** (read paper key sections directly):
-   - Read: **Introduction, Hypothesis Development, Literature Review** (for concept definitions)
-   - Read: Abstract, Results tables, Variable Definitions (in context or appendix)
-   - Create `source/summary/{citekey}_summary.md` using template
-   - Include **3-5 key Claimed findings** FIRST (authors' interpretations)
-   - Include **3-5 key Ground Truth findings** SECOND (empirical support)
-   - **Correspondence**: Ground Truth Finding N should support Claim N
-   - Fill **Concepts Defined table** with:
-     - Abstract theoretical definitions (NOT operationalizations)
-     - Link to constructs that operationalize each concept
-     - Mark undefined concepts with `[common-sense]`
-   - Fill **Measures/Proxies table** with:
-     - Computational definitions
-     - Chain: Measure → Construct → Concept
+#### 3.1 Orchestrator Creates Initial Summary
 
-2. **Dispatch Verify Agent** (Agent tool, general-purpose):
-   - Agent reads summary only (not full paper)
-   - Checks each finding: YES/NO with one-sentence reason
-   - Simple output format
+Read paper key sections directly:
+- Read: **Introduction, Hypothesis Development, Literature Review** (for concept definitions)
+- Read: Abstract, Results tables, Variable Definitions (in context or appendix)
+- Create `source/summary/{citekey}_summary.md` using template
 
-3. **Orchestrator revises** (if any NO):
-   - Edit failing findings directly
-   - Add missing definitions
-   - No new interpretations
+Include:
+- **3-5 key Claimed findings** FIRST (authors' interpretations)
+- **3-5 key Ground Truth findings** SECOND (empirical support)
+- **Correspondence**: Ground Truth Finding N should support Claim N
+- **Hypothesis section**: Analyze argument structure (see kb-extract guidance)
+- **Concepts Defined table**: Abstract definitions + construct links
+- **Measures/Variables table**: Computational definitions + wiki name mapping
+- **Methods section**: Note if standard vs novel (for wiki decision)
+
+#### 3.2 Dispatch Hypothesis Agent (inline)
+
+If hypothesis is complex, dispatch general-purpose agent:
+```
+Agent prompt: "Read raw/papers/{citekey}/{citekey}.md Hypothesis Development section.
+Analyze: 1) Hypothesis statement, 2) Premises and sources, 3) Deductive/Inductive approach.
+Return structured Hypothesis section content."
+```
+
+#### 3.3 Dispatch References Agent (inline)
+
+After creating Related Papers table, dispatch agent to enrich citations:
+```
+Agent prompt: "Grep raw/papers/{citekey}/{citekey}.md for Reference/References section.
+Match citations in Related Papers table to full entries.
+Return: for each citation, extract authors, year, title."
+```
+
+#### 3.4 Dispatch kb-verify Agent
+
+Invoke kb-verify skill to check Ground Truth findings:
+- kb-verify returns YES/NO for each finding
+- If any NO: Orchestrator edits failing findings directly
+- Add missing definitions, no new interpretations
+
+#### 3.5 Link Related Papers
+
+Run script to check wiki links:
+```bash
+python Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update
+```
 
 ### Phase 4: Wiki Update (Orchestrator)
 
-After summary is finalized, **Orchestrator** (you) creates/updates wiki pages:
+After summary finalized, **Orchestrator** creates/updates wiki pages:
 
-1. Read finalized `source/summary/{citekey}_summary.md`
-2. For "Concepts Defined" table entries → create/update `wiki/concepts/{concept}.md`
-3. For "Measures/Proxies" table entries → create/update `wiki/proxies/{proxy}.md`
-4. For "Methods" section → create/update `wiki/methods/{method}.md`
-5. For theories mentioned → create/update `wiki/theories/{theory}.md`
+1. For "Concepts Defined" table → create/update `wiki/concepts/{concept}.md`
+2. For "Measures/Variables" table → **CHECK wiki criteria**:
+   - If directly measurable (raw counts, indicators, ratios, network stats) → create `wiki/variables/{variable}.md`
+   - If derived/composite (PCA components, constructed indices) → **SKIP wiki creation**
+   - Use **common-sense descriptive names** (e.g., "Peer_Selection_Count" not "InDegree")
+3. For "Methods" section → **CHECK filtering criteria**:
+   - If standard method (OLS, DiD, 2SLS, GMM, etc.) → **SKIP wiki creation**
+   - If novel design/model → create `wiki/methods/{method}.md`
+4. For theories mentioned → create/update `wiki/theories/{theory}.md`
 
-Use templates from `templates/` directory. Use Obsidian [[filename]] linking.
+Use templates from `templates/`. Use Obsidian [[filename]] linking.
 
 ### Phase 5: Index Updates
 
@@ -112,8 +139,10 @@ Append to `wiki/log.md`:
 - libby-extract skill (../libby/extract/SKILL.md)
 - libby-fetch skill (../libby/fetch/SKILL.md)
 - paddle-pdf skill (../paddle-pdf/SKILL.md)
-- kb-extract skill (kb-extract.md)
-- Python Scripts/update_indexes.py
+- kb-extract skill (kb-extract/SKILL.md) - extraction guidance
+- kb-verify skill (kb-verify/SKILL.md) - verification agent
+- Python Scripts/check_related_papers.py - wiki link checker
+- Python Scripts/update_indexes.py - index updater
 
 ## Error Handling
 
@@ -135,7 +164,7 @@ Created:
 - source/summary/{citekey}_summary.md
 - wiki/concepts/{concept}.md ({n} pages)
 - wiki/theories/{theory}.md ({n} pages)
-- wiki/proxies/{proxy}.md ({n} pages)
+- wiki/variables/{variable}.md ({n} pages)
 - wiki/methods/{method}.md ({n} pages)
 
 Indexes updated. See wiki/_index.md for overview.
