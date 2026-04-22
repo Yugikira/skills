@@ -204,15 +204,58 @@ Ground Truth findings reference paper names: "InDegree (see Variables table) has
 
 ## Wiki Creation (Orchestrator's Job)
 
-After summary finalized:
+After summary finalized, create wiki pages **following templates exactly**:
 
-1. **Concepts** → create/update wiki/concepts/{concept}.md (include Constructs section)
-2. **Variables** → CHECK criteria before creating wiki/variables/{variable}.md:
-   - Create for: directly measurable/basic (raw counts, indicators, ratios, network stats)
-   - Skip for: derived/composite (PCA components, constructed indices)
-   - Use descriptive names (e.g., "Peer_Selection_Count" not "InDegree")
-3. **Methods** → CHECK criteria before creating wiki/methods/{method}.md:
-   - Create for: novel designs, analytical models, methodological contributions
-   - Skip for: standard methods (OLS, DiD, 2SLS, GMM, etc.)
+### 1. Concepts → wiki/concepts/{concept}.md
+
+Use `templates/concept.md` structure. Fill these sections from paper:
+
+| Template Section | Source in Paper | Required? |
+|------------------|-----------------|-----------|
+| Definition | Introduction, Hypothesis Development, Lit Review | **YES** |
+| Alternative Definitions | Literature Review (how others define it) | If available |
+| Constructs & Variables | Measures/Variables table from summary | **YES** |
+| Related Theories | Theory section mentions | If available |
+| Determinants | What causes variation in concept | If discussed |
+| Economic Consequences | What outcomes concept affects | If discussed |
+| Identification Strategy | How paper identifies/causes concept | If discussed |
+| Future Works | Limitations, future research section | If mentioned |
+
+**Naming**: Use concept name from Concepts Defined table. Link first_used to summary.
+
+### 2. Variables → wiki/variables/{variable}.md
+
+Use `templates/variable.md` structure. Fill these sections:
+
+| Template Section | Source | Required? |
+|------------------|--------|-----------|
+| What It Measures | Variables table: Concept + Definition | **YES** |
+| Computation | Variables table: Computational Definition | **YES** |
+| Data Sources | Methods section | If available |
+| Validity Notes | Results/discussion of variable validity | If discussed |
+| Alternative Variables | Other measures for same concept | If available |
+| Papers Using | Link to summary | **YES** |
+| Interpretations | How variable is interpreted | If discussed |
+
+**Wiki Criteria**: Only for directly measurable variables. Skip PCA, indices, fitted values.
+
+### 3. Methods → wiki/methods/{method}.md
+
+Use `templates/method.md` structure. Only create for novel designs/models.
+
+| Template Section | Source | Required? |
+|------------------|--------|-----------|
+| Description | Methods section overview | **YES** |
+| Steps | Method procedure | **YES** |
+| When To Use | When method is applicable | If discussed |
+| Requirements | Data, tools, assumptions needed | If available |
+| Limitations | What method cannot do | If discussed |
+| Papers Using | Link to summary | **YES** |
+
+**Skip**: Standard methods (OLS, DiD, 2SLS, GMM, etc.)
+
+### 4. Theories → wiki/theories/{theory}.md
+
+Use `templates/theory.md` structure. Fill all sections from paper.
 
 Use templates from templates/. Use Obsidian [[filename]] links.

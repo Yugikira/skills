@@ -54,7 +54,4 @@ first_defined: [[source/summary/{citekey}]]
 ## Future Works
 {Brief summary: main research gap, promising direction}
 
-- **{open question}**: {why important, what's missing} (see [[source/summary/{citekey}]])
-
-## See Also
-- [[concepts/{related-concept}]] - {relationship}
+- **{open question}**: {why important, what's missing} (see [[source/summary/{citekey}_summary]])

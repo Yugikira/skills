@@ -42,7 +42,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
-- **See Also sections**: Removed from theory.md and variable.md templates (not meaningful at this stage)
+- **See Also sections**: Removed from theory.md, variable.md, and concept.md templates (not meaningful at this stage)
+
+### Fixed
+
+- **Wiki template guidance**: Added explicit template section mapping in kb-extract and kb-ingest
+  - Specifies which template sections to fill for Concepts, Variables, Methods, Theories
+  - Documents source in paper for each section
+  - Marks required vs optional sections
 
 ### Updated Files
 

@@ -106,19 +106,28 @@ python Scripts/check_related_papers.py --summary source/summary/{citekey}_summar
 
 ### Phase 4: Wiki Update (Orchestrator)
 
-After summary finalized, **Orchestrator** creates/updates wiki pages:
+After summary finalized, **Orchestrator** creates/updates wiki pages **following templates exactly** (see kb-extract for detailed template guidance):
 
-1. For "Concepts Defined" table → create/update `wiki/concepts/{concept}.md`
-2. For "Measures/Variables" table → **CHECK wiki criteria**:
-   - If directly measurable (raw counts, indicators, ratios, network stats) → create `wiki/variables/{variable}.md`
-   - If derived/composite (PCA components, constructed indices) → **SKIP wiki creation**
-   - Use **common-sense descriptive names** (e.g., "Peer_Selection_Count" not "InDegree")
-3. For "Methods" section → **CHECK filtering criteria**:
-   - If standard method (OLS, DiD, 2SLS, GMM, etc.) → **SKIP wiki creation**
-   - If novel design/model → create `wiki/methods/{method}.md`
-4. For theories mentioned → create/update `wiki/theories/{theory}.md`
+1. **Concepts** → create wiki/concepts/{concept}.md
+   - Use templates/concept.md structure
+   - Fill: Definition, Constructs & Variables (required)
+   - Fill optional: Alternative Definitions, Determinants, Consequences, etc.
 
-Use templates from `templates/`. Use Obsidian [[filename]] linking.
+2. **Variables** → CHECK criteria before creating wiki/variables/{variable}.md
+   - Use templates/variable.md structure
+   - Create for: directly measurable (raw counts, indicators, ratios, network stats)
+   - Skip for: derived/composite (PCA components, indices, fitted values)
+   - Use Wiki Names (common-sense, not paper abbreviations)
+
+3. **Methods** → CHECK criteria before creating wiki/methods/{method}.md
+   - Use templates/method.md structure
+   - Create for: novel designs, analytical models
+   - Skip for: standard methods (OLS, DiD, 2SLS, GMM, etc.)
+
+4. **Theories** → create wiki/theories/{theory}.md
+   - Use templates/theory.md structure
+
+Use templates from templates/. Use Obsidian [[filename]] linking.
 
 ### Phase 5: Index Updates
 
