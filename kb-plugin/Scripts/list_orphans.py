@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
-WIKI_DIR = SCRIPT_DIR.parent / "wiki"
+WIKI_DIR = SCRIPT_DIR.parent.parent / "wiki"
 
 CATEGORIES = ["concepts", "theories", "proxies", "methods"]
 

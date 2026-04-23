@@ -19,7 +19,7 @@ from pathlib import Path
 from collections import defaultdict
 
 SCRIPT_DIR = Path(__file__).parent
-ROOT_DIR = SCRIPT_DIR.parent
+ROOT_DIR = SCRIPT_DIR.parent.parent
 
 # Directories to scan for markdown files
 SCAN_DIRS = [
