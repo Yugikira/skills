@@ -1,0 +1,92 @@
+{
+  "source_file": "grossman_1980_impossibility_informationally_efficient.pdf",
+  "output_dir": "output",
+  "total_pages": 16,
+  "processed_at": "2026-04-14T15:00:18.548367+00:00",
+  "model": "paddleocr-vl-1.5",
+  "images": [
+    "img_000.png"
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 2,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 3,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 4,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 5,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 6,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 7,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 8,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 9,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 10,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 11,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 12,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 13,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 14,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 15,
+      "char_count": 0,
+      "images": 0
+    },
+    {
+      "page": 16,
+      "char_count": 0,
+      "images": 0
+    }
+  ]
+}

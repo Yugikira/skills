@@ -67,6 +67,15 @@ source: [[raw/papers/{citekey}/{citekey}.pdf]]
 |----------------|-----------|------------|---------|--------------------------|-----------|
 | {paper_name} | {wiki_name} | {construct} | {concept} | {exact formula} | [[variables/{wiki_name}]] or [no wiki] |
 
+## Model Parameters & Constructs (Analytical Models Only)
+> **For analytical/model papers**: These are theoretical constructs.
+> Create wiki/constructs/ pages for these. NO wiki/variables/ pages.
+
+| Construct | Symbol | Type | Definition | Wiki Page |
+|-----------|--------|------|------------|-----------|
+| {name} | λ | model_parameter | {definition} | [[constructs/{name}]] |
+| {name} | - | definitional_construct | {definition} | [[constructs/{name}]] |
+
 ## Hypothesis
 > If no explicit hypothesis: write "No explicit hypothesis stated in this paper."
 >

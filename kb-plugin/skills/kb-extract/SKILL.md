@@ -83,6 +83,40 @@ Write: "No explicit hypothesis stated in this paper. The paper is a {descriptive
 → Create wiki/methods/{method_name}.md
 ```
 
+## Analytical Model Papers
+
+### Recognition Criteria
+Paper is an analytical model if:
+- No empirical data or sample description
+- Contains formal mathematical model with equations
+- Results are proofs/theorems, NOT coefficient estimates
+- "Variables" are model parameters (symbols like λ, σ²), not observable measures
+
+### Extraction Rules for Analytical Models
+
+1. **SKIP wiki/variables/** - Model parameters are theoretical constructs, NOT observable
+2. **CREATE wiki/constructs/{construct}.md** for theoretical constructs:
+   - Model parameters (λ, σ_ε², a, c, etc.)
+   - Definitional constructs (Informed Traders, Price Informativeness, etc.)
+   - Use templates/construct.md
+3. **CREATE wiki/methods/{model}.md** using templates/method_analytical.md
+4. **Ground Truth Findings**: Use Theorem/Proposition format (NOT coefficient format)
+   ```
+   Finding 1: **Theorem 5** - If σ_x² = 0 (no noise), equilibrium does not exist if e^ac < √(1+n).
+   ```
+5. **Model Variations**: Extract comparative statics into Model Variations table
+   - From paper: parameter changes and their effects
+   - Future updates: when other papers adopt model with variations
+
+### Model Variations Section
+The Model Variations table in method_analytical.md should include:
+| Paper | Variation | Key Insight Changed |
+|-------|-----------|---------------------|
+| [[source/summary/{citekey}]] | {original setting - baseline} | {main result} |
+| [[source/summary/{citekey2}]] | {changed assumption/setup} | {how result differs} |
+
+Update this table when future papers adopt the model with variations in key assumptions.
+
 ## Where to Find Concepts
 
 **Key sections for concept definitions**:

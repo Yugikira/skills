@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
-WIKI_DIR = SCRIPT_DIR.parent / "wiki"
+WIKI_DIR = SCRIPT_DIR.parent.parent / "wiki"  # Points to skills/wiki/ (main wiki)
 
 def parse_frontmatter(content: str) -> dict:
     """Parse YAML frontmatter from markdown content."""
@@ -90,7 +90,8 @@ def generate_category_index(category: str, pages: list) -> str:
         "concepts": "Concepts",
         "theories": "Theories",
         "variables": "Variables",
-        "methods": "Methods"
+        "methods": "Methods",
+        "constructs": "Constructs"
     }
 
     lines = [
@@ -122,12 +123,14 @@ def generate_master_index(stats: dict) -> str:
         "## Statistics",
         f"- Papers processed: See source/summary/ directory",
         f"- Concepts: {stats['concepts']}",
+        f"- Constructs: {stats['constructs']}",
         f"- Theories: {stats['theories']}",
         f"- Variables: {stats['variables']}",
         f"- Methods: {stats['methods']}",
         "",
         "## Categories",
         "- [[concepts/_index]] - Concepts defined and used",
+        "- [[constructs/_index]] - Model parameters and definitional constructs",
         "- [[theories/_index]] - Theoretical frameworks",
         "- [[variables/_index]] - Measures and variables",
         "- [[methods/_index]] - Research methodologies",
@@ -140,7 +143,7 @@ def generate_master_index(stats: dict) -> str:
 
 def update_indexes(dry_run: bool = False):
     """Update all index files."""
-    categories = ["concepts", "theories", "variables", "methods"]
+    categories = ["concepts", "constructs", "theories", "variables", "methods"]
     stats = {}
 
     for category in categories:

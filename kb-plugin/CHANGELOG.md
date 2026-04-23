@@ -6,6 +6,62 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-04-23] - Analytical Model Support, Scanned PDF Handling, Constructs Category
+
+### Added
+
+- **Analytical Model Papers**: New extraction guidance for mathematical/theoretical papers
+  - Recognition criteria: no empirical data, proofs/theorems, model parameters (symbols)
+  - Ground Truth format: Theorem/Proposition style (NOT coefficient estimates)
+  - Model Variations table: comparative statics + future paper updates
+- **Constructs Category**: New `wiki/constructs/` for theoretical constructs
+  - Model parameters (λ, σ_ε², etc.)
+  - Definitional constructs (Informed Traders, Price Informativeness, etc.)
+  - Top journal filtering: max 5 entries (oldest + newest)
+- **templates/construct.md**: New template for theoretical constructs
+- **templates/method_analytical.md**: Simplified template for analytical models
+  - Basic setup section (3-5 bullet points)
+  - Model Variations table (original + future updates)
+- **Scanned PDF handling**: Phase 1 now handles scanned PDFs
+  - First try: `--ai-extract` option
+  - Fallback: pdftoppm + AI title extraction + `--with-title`
+- **Cleanup instruction**: Remove temporary folders in `./raw/data/` after extraction
+
+### Changed
+
+- **kb-ingest Phase 1**: Updated Case C for scanned PDF handling with --ai-extract and image fallback
+- **kb-ingest Phase 4**: Added constructs category and analytical model handling
+- **kb-extract/SKILL.md**: Added "Analytical Model Papers" section with extraction rules
+- **paper_summary.md**: Added "Model Parameters & Constructs" section for analytical models
+- **CLAUDE.md**: Updated Wiki Structure and Templates sections (added constructs, method_analytical)
+
+### Rationale
+
+User feedback led to these changes:
+1. Analytical model papers (e.g., Grossman & Stiglitz 1980) treated model parameters as "variables" incorrectly
+2. Model parameters are theoretical constructs, NOT observable/measurable
+3. Method template too complex for analytical models - need simplified version
+4. Model Variations should include future paper updates, not just original comparative statics
+5. Scanned PDFs failed with standard extraction - need --ai-extract and image fallback
+
+### Test Case
+
+Grossman & Stiglitz (1980) "On the Impossibility of Informationally Efficient Markets":
+- Model parameters (λ, σ_ε², σ_θ², a, c) → wiki/constructs/ (NOT wiki/variables/)
+- Model → wiki/methods/ using method_analytical.md template
+- Model Variations table captures comparative statics
+
+### Testing Results (2026-04-23)
+
+Phase 1-2 tested with scanned PDF `ssrn-228054.pdf`:
+- ✅ Cascade fallback works: `libby extract --format json` → `libby extract --ai-extract --format json` → `pdftoppm + MiniMax MCP`
+- ✅ MiniMax MCP `understand_image` successfully extracted title
+- ✅ Cleanup removes temp images
+- 🔧 Additional fix: PDF stored in `~/.lib/papers/` - added copy step to `raw/papers/`
+- 🔧 Additional fix: Markdown in `output/` subfolder - added move step
+
+---
+
 ## [2026-04-22] - Hypothesis Section, Variable Naming, Methods Filtering
 
 ### Added

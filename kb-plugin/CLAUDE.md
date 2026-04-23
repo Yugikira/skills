@@ -68,8 +68,9 @@ Internal helper (not user-invocable):
 ## Wiki Structure
 
 - `wiki/concepts/` - Concept definitions and relationships
+- `wiki/constructs/` - Theoretical constructs from analytical models (model parameters, definitional constructs)
 - `wiki/theories/` - Theoretical frameworks
-- `wiki/proxies/` - Measures and operationalizations
+- `wiki/variables/` - Measures and operationalizations
 - `wiki/methods/` - Research methodologies
 - `source/summary/` - Paper summaries
 - `source/conversations/` - Saved Q&A discussions
@@ -78,4 +79,5 @@ Internal helper (not user-invocable):
 
 All wiki pages use templates in `templates/`:
 - `paper_summary.md` - Paper summary with 3-tier findings structure
-- `concept.md`, `theory.md`, `proxy.md`, `method.md` - Wiki page templates
+- `concept.md`, `theory.md`, `variable.md`, `method.md`, `construct.md` - Wiki page templates
+- `method_analytical.md` - Template for analytical/mathematical models

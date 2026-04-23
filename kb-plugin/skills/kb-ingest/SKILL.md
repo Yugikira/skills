@@ -35,8 +35,29 @@ Papers outside these domains will prompt for user confirmation.
 3. Invoke libby-fetch: `/libby fetch {doi}`
 
 **Case C: Local PDF in raw/data/**
-1. Invoke libby-extract: `/libby extract {pdf_path}`
-2. This organizes PDF to `raw/papers/{citekey}/`
+
+**IMPORTANT: Do NOT use WebSearch or WebFetch. Follow these exact Bash/MCP tool steps:**
+
+1. First attempt: Run `libby extract {pdf_path} --format json` and capture output
+2. Check result:
+   - If output contains citekey and metadata: SUCCESS, proceed to step 5
+   - If output shows "Failed" or no citekey: FAIL, proceed to step 3
+3. Second attempt (AI fallback): Run `libby extract {pdf_path} --ai-extract --format json`
+4. Check result:
+   - If output contains citekey: SUCCESS, proceed to step 5
+   - If output shows "Failed" or "Cannot extract text": FAIL, proceed to pdftoppm fallback
+5. **pdftoppm fallback** (for scanned PDFs when both above fail):
+   a. Run Bash: `pdftoppm -png -f 1 -l 1 {pdf_path} raw/data/temp_page`
+   b. Run MiniMax MCP tool `mcp__MiniMax__understand_image` with prompt "Extract paper title" on `raw/data/temp_page-01.png`
+   c. Run Bash: `libby extract {pdf_path} --with-title "{extracted_title}" --format json`
+6. After successful extraction:
+   a. PDF is in `~/.lib/papers/{citekey}/` - copy to `raw/papers/{citekey}/`
+   b. Run: `mkdir -p raw/papers/{citekey} && mv -r ~/.lib/papers/{citekey}/* raw/papers/{citekey}/`
+7. Verify files in `raw/papers/{citekey}/`:
+   - Should have: `{citekey}.pdf`, `{citekey}.bib`
+   - If markdown in `output/` subfolder, move to parent: `mv raw/papers/{citekey}/output/{citekey}.md raw/papers/{citekey}/`
+8. **Clean up**: 
+   - Run: `rm -rf raw/data/temp_page*.png` (remove temp images)
 
 **Case D: Existing citekey**
 1. Skip acquisition, use existing files
@@ -117,14 +138,23 @@ After summary finalized, **Orchestrator** creates/updates wiki pages **following
    - Use templates/variable.md structure
    - Create for: directly measurable (raw counts, indicators, ratios, network stats)
    - Skip for: derived/composite (PCA components, indices, fitted values)
+   - Skip for: analytical model parameters (these are constructs, NOT variables)
    - Use Wiki Names (common-sense, not paper abbreviations)
 
-3. **Methods** → CHECK criteria before creating wiki/methods/{method}.md
-   - Use templates/method.md structure
+3. **Constructs** → for analytical model papers, create wiki/constructs/{construct}.md
+   - Use templates/construct.md structure
+   - Create for: model parameters (λ, σ², etc.) and definitional constructs
+   - Fill: Definition, Mathematical Representation, Role in Model
+   - Top journal filtering: max 5 entries (oldest + newest)
+
+4. **Methods** → CHECK criteria before creating wiki/methods/{method}.md
+   - For analytical models: use templates/method_analytical.md
+   - For empirical designs: use templates/method.md
    - Create for: novel designs, analytical models
    - Skip for: standard methods (OLS, DiD, 2SLS, GMM, etc.)
+   - Model Variations: include comparative statics + future paper updates
 
-4. **Theories** → create wiki/theories/{theory}.md
+5. **Theories** → create wiki/theories/{theory}.md
    - Use templates/theory.md structure
 
 Use templates from templates/. Use Obsidian [[filename]] linking.
