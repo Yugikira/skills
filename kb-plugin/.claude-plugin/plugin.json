@@ -1,0 +1,8 @@
+{
+  "name": "kb-plugin",
+  "version": "1.0.0",
+  "description": "Knowledge Base skills for academic paper ingestion, querying, and wiki management",
+  "author": {
+    "name": "Yugi"
+  }
+}

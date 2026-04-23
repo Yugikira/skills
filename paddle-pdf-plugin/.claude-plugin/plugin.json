@@ -1,0 +1,8 @@
+{
+  "name": "paddle-pdf-plugin",
+  "version": "1.0.0",
+  "description": "PaddleOCR PDF conversion skill for converting PDFs to Markdown",
+  "author": {
+    "name": "Yugi"
+  }
+}

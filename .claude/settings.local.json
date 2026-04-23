@@ -1,4 +1,16 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(uv run:*)",
+      "Bash(paddle-pdf config:*)",
+      "Bash(paddle-pdf convert:*)",
+      "Bash(paddle-pdf quota:*)",
+      "Bash(paddle-pdf resume:*)",
+      "Bash(libby extract:*)",
+      "Bash(libby fetch:*)",
+      "Bash(libby websearch:*)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -12,5 +24,30 @@
         ]
       }
     ]
+  },
+  "extraKnownMarketplaces": {
+    "kb-marketplace": {
+      "source": {
+        "source": "directory",
+        "path": "./kb-plugin"
+      }
+    },
+    "libby-marketplace": {
+      "source": {
+        "source": "directory",
+        "path": "./libby-plugin"
+      }
+    },
+    "paddle-pdf-marketplace": {
+      "source": {
+        "source": "directory",
+        "path": "./paddle-pdf-plugin"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "kb-plugin@kb-marketplace": true,
+    "libby-plugin@libby-marketplace": true,
+    "paddle-pdf-plugin@paddle-pdf-marketplace": true
   }
 }

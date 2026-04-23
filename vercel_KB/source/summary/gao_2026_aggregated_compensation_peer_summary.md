@@ -3,7 +3,7 @@ title: Aggregated Compensation Peer Group Disclosure and Managerial Labor Market
 doi: 10.1111/1475-679X.70026
 citekey: gao_2026_aggregated_compensation_peer
 authors: [Ray Rui Gao, Yifei Lu]
-year: 2025
+year: 2026
 journal: Journal of Accounting Research
 keywords: [managerial labor market, managerial labor classifications, managerial labor competition measures, network analysis, compensation benchmarking peers]
 processed: 2026-04-22
@@ -13,31 +13,34 @@ source: [[raw/papers/gao_2026_aggregated_compensation_peer/gao_2026_aggregated_c
 # Aggregated Compensation Peer Group Disclosure and Managerial Labor Market Competition: A Network Analysis
 
 ## One-Line Summary
-Develops novel network-based measures of managerial labor market classifications and competition using compensation peer group disclosures, demonstrating superior predictive power for executive moves and validating associations with retention tools and theoretical predictions.
+Develops network-based managerial labor classifications and competition measures from compensation peer disclosures that capture multidimensional talent demand, validated by talent flow prediction and compensation contract responses.
 
 ## Abstract Summary
-This paper constructs networks from compensation benchmarking peer disclosures to create Managerial Labor Classifications (MLCs) and competition measures. These classifications outperform existing predictors in predicting executive job moves, capturing multidimensional and dynamic talent competition features. Competition measures are associated with higher equity pay, longer vesting periods, and can explain controversial pay practices like pay for luck and reduced RPE use.
+The authors construct compensation benchmarking networks from proxy statement disclosures to identify managerial labor market competitors and quantify competition intensity. Their classifications (Direct, Indirect, Louvain peers) strongly predict executive job-hopping, outperforming existing predictors. Competition measures (InDegree, Clustering, Eigenvector, Louvain Density/Size) are associated with retention-oriented compensation (higher equity pay, longer vesting). Applying these measures, the paper finds evidence supporting Oyer's [2004] theory on pay-for-luck and RPE, and Fama's [1980] tournament incentive theory.
 
 ## Claimed Findings
-> **3-5 KEY INTERPRETATIONS** - Authors' main claims.
+> **5 KEY INTERPRETATIONS** - Authors' main claims.
 >
 > **Important**: Claims should correspond to Ground Truth findings below. Claim N should be supported by Ground Truth Finding N.
 
-- Claim 1: MLCs strongly predict talent flows and outperform existing predictors (industry, size, location) in identifying labor market competitors.
-- Claim 2: Competition measures are associated with retention tools - higher equity pay, longer pay duration - consistent with labor demand interpretation.
-- Claim 3: Labor market competition explains controversial pay practices: firms pay more for luck and use less RPE when facing greater competition.
-- Claim 4: External tournament incentives from labor market competition are associated with superior future firm performance.
+- Claim 1: Managerial Labor Classifications (MLCs) effectively identify labor market competitors, outperforming conventional predictors (industry, size, location) in predicting talent flows.
+- Claim 2: Competition measures capture outside opportunities and talent transferability, inducing firms to offer retention-oriented compensation (higher equity pay with longer vesting periods).
+- Claim 3: Labor market competition explains controversial pay practices: firms pay more for luck and use less RPE when facing stronger competition, consistent with Oyer's [2004] theoretical model.
+- Claim 4: Labor market provides external tournament incentives: larger tournament prizes (pay gap with potential employers) are associated with superior future firm performance.
+- Claim 5: MLCs better capture the theoretical notion of tournament rivals than product industry classifications, enabling more powerful tests of labor theories.
 
 ## Ground Truth Findings
-> **3-5 KEY FINDINGS ONLY** - Main empirical results with variable definitions.
+> **5 KEY FINDINGS ONLY** - Main empirical results with variable definitions.
 >
-> Format: "Variable X (defined as [formula]) has β=YY (p<ZZ) in [model] (n=XXXX)"
+> Format: "Variable X (defined as [formula]) has beta=YY (p<ZZ) in [model] (n=XXXX)"
+>
+> **Correspondence**: The first N findings here should directly support the N claims above.
 
-- Finding 1: InDegree (defined as number of firms selecting focal firm as compensation peer) and Clustering (defined as clustering coefficient in compensation peer network) have positive and significant coefficients (p<0.01) in logistic regression predicting Talent_Flow (n=various). MLCs have pseudo-R² comparable to all existing predictors combined.
-- Finding 2: PCOMP1 (defined as first principal component of InDegree, Clustering, Louvain Density, Louvain Size, Eigenvector) has β=0.069 (p<0.001) in OLS regression on Ln(Total Pay) (n=9,798). PCOMP2 (second principal component) has β=0.070 (p<0.001). A one standard deviation increase in PCOMP1/PCOMP2 is associated with 6.9%/7.0% increase in CEO compensation.
-- Finding 3: Equity Pay percentage increases with competition measures. InDegree, Clustering, Louvain Density, Louvain Size, and Eigenvector all have positive significant coefficients (p<0.01) on Equity_Pct. Pay Duration also increases significantly with competition measures.
-- Finding 4: Luck x PCOMP1 and Luck x PCOMP2 have positive and significant coefficients (p<0.05) in regression on Ln(Total Pay), indicating firms pay more for luck when facing greater competition. Return_Peer x PCOMP1 and Return_Peer x PCOMP2 have positive significant coefficients in RPE tests, indicating less RPE filtering with greater competition.
-- Finding 5: Ln(Potential Employer Pay Gap) (defined as pay gap between focal CEO and second-highest pay among MLC peers) has positive significant coefficient on Tobin Q (p<0.05), indicating external tournament incentives improve firm performance. Fitted Pay (competition-driven compensation) is associated with better future ROA and stock returns (p<0.05).
+- Finding 1: Direct Peer indicator (defined as firms that either select or are selected by focal firm as compensation peer) has coefficient 1.532 (p<0.001) in logistic regression predicting Talent Flow (n=177,010 focal-peer pairs), outperforming Same TNIC2 (beta=0.891) and Similar MV (beta=0.567). Pseudo R-squared of MLC-only model (0.296) equals that of all conventional predictors combined (0.294).
+- Finding 2: InDegree (defined as count of firms selecting focal firm as compensation peer, standardized) has beta=0.061 (p<0.001) in OLS regression on Ln(Total Pay) (n=9,342 firm-years); Equity Pct increases by 3.2 percentage points (p<0.01) per one SD increase in PCOMP1; Pay Duration increases by 0.27 years (p<0.01) per one SD increase in PCOMP1.
+- Finding 3: Luck x PCOMP1 interaction has beta=0.145 (p<0.01) in OLS regression on Ln(Total Pay), indicating firms pay 14.5% more for luck per one SD increase in competition; Ln(Return Peer) x PCOMP1 has beta=0.043 (p<0.05), reducing RPE sensitivity by 45.6% per one SD increase in competition (Table 6, Panels A and B).
+- Finding 4: Ln(Louvain Peer Pay Gap) (defined as ln(1 + focal CEO pay - second-highest pay among Louvain peers)) has beta=0.008 (p<0.05) on Future ROA 3yr, indicating 0.8% higher future ROA per unit tournament prize (n=8,456 firm-years). No significant effect found using FF48 or TNIC2 industry peers.
+- Finding 5: Louvain Peer Same Product Industry (beta=1.391, p<0.001) and Louvain Peer Diff Product Industry (beta=1.432, p<0.001) both strongly predict Talent Flow in logistic regression, demonstrating MLCs capture multidimensional skills beyond industry-related knowledge.
 
 ## Other Interpretations
 > Alternative views from other papers.
@@ -47,13 +50,15 @@ This paper constructs networks from compensation benchmarking peer disclosures t
 ## Concepts Defined
 > **Concepts**: Abstract theoretical ideas (not directly observable).
 > **Constructs**: Multi-item measures that operationalize concepts.
+>
+> **Where to find**: Introduction, Hypothesis Development, Literature Review sections.
 
 | Concept | Definition | Constructs | Wiki Page |
 |---------|------------|------------|-----------|
-| Outside Opportunities | The number of alternative employment options available to executives, affecting their reservation wage and poaching risk | InDegree, Louvain Size, PCOMP2 | [[concepts/Outside_Opportunities]] |
-| Talent Transferability | The extent to which executive skills are suitable for potential employers, affecting poaching risk | Clustering, Louvain Density, Eigenvector, PCOMP1 | [[concepts/Talent_Transferability]] |
-| Managerial Labor Market Competition | The intensity of competition for managerial talent among firms, encompassing both outside opportunities and talent transferability | PCOMP1, PCOMP2 | [[concepts/Managerial_Labor_Market_Competition]] |
-| Managerial Labor Classifications (MLCs) | Network-based groupings of firms that compete for similar managerial talent | Direct Peer, Indirect Peer, Louvain Peer | [[concepts/Managerial_Labor_Classifications]] |
+| Managerial Labor Classifications | Groupings of firms that compete for similar managerial talent, identifying potential employers for executives | Direct Peer, Indirect Peer, Louvain Peer | [[concepts/Managerial_Labor_Classifications]] |
+| Outside Opportunities | The number and quality of alternative employment options available to executives in the managerial labor market | InDegree, Louvain Size | [[concepts/Outside_Opportunities]] |
+| Talent Transferability | The degree to which executive skills and human capital are applicable across different firms in the labor market | Clustering, Eigenvector, Louvain Density | [[concepts/Talent_Transferability]] |
+| Compensation Benchmarking Network | A directed graph linking firms based on peer selection choices, representing firms' relative positions in the managerial labor market | Network edges (peer selections), Louvain groups | [implicit - see Methods] |
 
 ## Measures/Variables
 > **Paper Variable** = exact name from paper (use in Ground Truth findings)
@@ -62,63 +67,76 @@ This paper constructs networks from compensation benchmarking peer disclosures t
 
 | Paper Variable | Wiki Name | Constructs | Concept | Computational Definition | Wiki Page |
 |----------------|-----------|------------|---------|--------------------------|-----------|
-| InDegree | Peer_Selection_Count | Network Position | Outside Opportunities | Number of firms selecting focal firm as compensation peer | [[variables/Peer_Selection_Count]] |
-| Clustering | Peer_Clustering_Rate | Network Clustering | Talent Transferability | Clustering coefficient: number of links between peers divided by maximum possible links | [[variables/Peer_Clustering_Rate]] |
-| Louvain Density | Louvain_Group_Density | Group Clustering | Talent Transferability | Density of links within Louvain group: links divided by maximum possible links | [[variables/Louvain_Group_Density]] |
-| Louvain Size | Louvain_Group_Size | Group Size | Outside Opportunities | Number of firms in each Louvain group | [[variables/Louvain_Group_Size]] |
-| Eigenvector | Network_Centrality | Network Position | Talent Transferability | Eigenvector centrality from compensation benchmarking network adjacency matrix | [[variables/Network_Centrality]] |
-| PCOMP1 | [derived] | Talent Transferability Composite | Talent Transferability | First principal component of 5 network measures (35.06% variance) | [no wiki] |
-| PCOMP2 | [derived] | Outside Opportunities Composite | Outside Opportunities | Second principal component of 5 network measures (28.11% variance) | [no wiki] |
-| Talent_Flow | Executive_Move | Talent Mobility | Labor Competition | Indicator: 1 if top-5 executive moves to top-5 position at another firm within one year | [[variables/Executive_Move]] |
-| Fitted Pay | [derived] | Competition-Driven Pay | Market Wage | Fitted value from regression of Total Pay on all competition measures | [no wiki] |
+| InDegree | Peer_Selection_Count | Outside Opportunities | Outside Opportunities | Count of firms selecting focal firm as compensation peer in year t | [[variables/Peer_Selection_Count]] |
+| Clustering | Peer_Clustering_Rate | Talent Transferability | Talent Transferability | Number of links between focal firm's peers divided by maximum possible links between peers | [[variables/Peer_Clustering_Rate]] |
+| Eigenvector | Network_Centrality | Talent Transferability | Talent Transferability | Eigenvector centrality from connection matrix A, satisfying lambda*E = A*E | [[variables/Network_Centrality]] |
+| Louvain Density | Louvain_Group_Density | Talent Transferability | Talent Transferability | Number of links in Louvain group divided by maximum possible links in group | [[variables/Louvain_Group_Density]] |
+| Louvain Size | Louvain_Group_Size | Outside Opportunities | Outside Opportunities | Count of firms in each Louvain group | [[variables/Louvain_Group_Size]] |
+| Talent Flow | Talent_Flow | [indicator] | Managerial Labor Competition | Indicator=1 if top 5 executive of firm i moves to top 5 position of firm j within 1 year | [[variables/Talent_Flow]] |
+| Selected Peer | Selected_Peer | [indicator] | Managerial Labor Classification | Indicator=1 if focal firm i selects firm j as compensation peer in year t | [[variables/Selected_Peer]] |
+| PCOMP1 | [derived] | Composite Competition | Labor Market Competition | First principal component of 5 competition measures (standardized) | [no wiki - derived] |
+| PCOMP2 | [derived] | Composite Competition | Labor Market Competition | Second principal component of 5 competition measures (standardized) | [no wiki - derived] |
+| Fitted Pay | [derived] | Predicted Pay | Labor Competition Effect | Fitted value from competition measures in total pay regression | [no wiki - derived] |
 
 ## Hypothesis
 > If no explicit hypothesis: write "No explicit hypothesis stated in this paper."
 
 ### Hypothesis Statement
-1. MLCs better identify labor market competitors than product industry classifications
-2. Competition measures are positively associated with compensation level and retention tools
-3. Labor market competition explains controversial pay practices (pay for luck, reduced RPE)
-4. External tournament incentives from MLC peers are associated with superior performance
+No single formal hypothesis stated. The paper tests multiple theoretical predictions:
+1. **H1 (Implicit)**: MLCs predict talent flows better than conventional predictors.
+2. **H2 (Implicit)**: Competition measures are positively associated with total pay and retention-oriented compensation structure.
+3. **H3 (Oyer's Theory)**: Firms pay more for luck and use less RPE when facing stronger labor market competition.
+4. **H4 (Fama/Tournament)**: Larger tournament prizes from potential employers induce superior future performance.
 
 ### Argument Structure
+> Premises intended to support the hypothesis.
+
 | Premise | Source | Type |
 |---------|--------|------|
-| Compensation peer selection reflects firms' demand for managerial talent | Institutional background (SEC disclosure, Equilar report) | Observation |
-| Network position captures relative position in managerial labor market | Theory (Hotelling-like talent space) | Assumption |
-| Outside opportunities increase poaching risk | Theory (Oyer 2004) | Claim |
-| Talent transferability affects poaching risk | Theory (Murphy and Zabojnik 2004, 2007) | Claim |
+| Compensation peers reflect firms' talent demand across multiple dimensions (industry, size, location, operations) | Institutional Background (SEC disclosure, Equilar survey) | Observation |
+| Network analysis extracts latent labor market structure from aggregated peer choices | Network Theory (Jaffe 1986, Hoberg & Phillips 2016) | Assumption |
+| Boards possess private information about labor competitors unavailable to researchers | Brickley & Zimmerman [2010] | Assumption |
+| Outside opportunities increase reservation wage; talent transferability expands potential employer set | Oyer [2004], Murphy & Zabojnik [2004, 2007] | Theory |
+| Labor market provides tournament incentives through external employment opportunities | Fama [1980], Lazear & Rosen [1981] | Theory |
 
 ### Reasoning Approach
-- **Type**: Inductive - Empirical validation of theoretical constructs through network analysis
-- **Relation**: Strong - Evidence supports probabilistic claims about labor market competition
+- **Type**: Inductive - The paper develops novel measures from data patterns and validates them empirically rather than deductively testing pre-specified hypotheses.
+- **Relation**: Strong - The empirical evidence provides probabilistic support for the theoretical predictions, but causal interpretation relies on observational data and endogeneity controls.
 
 ### Evaluation
 - **Status**: Cogent
-- **Reason**: Strong empirical evidence from multiple tests (talent flow prediction, compensation validation, theoretical applications)
+- **Reason**: The measures are validated through multiple tests (talent flow prediction, compensation association, theoretical applications), but the observational nature limits causal claims. The predictions from established theories (Oyer, Fama) are confirmed, strengthening the interpretation.
 
 ## Methods
-- **Network Analysis**: Constructed directed compensation benchmarking networks from peer group disclosures (2006-2018, ISS Incentive Lab)
-- **MLC Design**: Three classifications - Direct Peer (directly linked firms), Indirect Peer (transitive links), Louvain Peer (Louvain community detection algorithm)
-- **Competition Measures**: Five network statistics (InDegree, Clustering, Louvain Density, Louvain Size, Eigenvector) + PCA to derive PCOMP1, PCOMP2
-- **Validation Tests**: Logistic regression for talent flows; OLS for compensation components; interaction models for pay for luck and RPE
+Network analysis of compensation peer disclosures to construct:
+1. **MLCs**: Three classification types (Direct, Indirect, Louvain) using Louvain community detection algorithm
+2. **Competition Measures**: Five network metrics (InDegree, Clustering, Eigenvector, Louvain Density, Louvain Size)
+3. **Validation**: Logistic regression for talent flows; OLS for compensation; interaction models for pay-for-luck and RPE
 
-> **Wiki Creation**: Novel MLC design warrants wiki method page.
+Sample: 2006-2018, ISS Incentive Lab + Execucomp + CRSP + Compustat; 177,010 focal-peer pairs; 9,342 firm-years
 
-## Novel Methodology
-> [[methods/Network_Based_MLC_Design]] - Novel approach for constructing managerial labor classifications using compensation peer networks
+> **Wiki Creation**: Network-Based MLC Design is novel methodology - CREATE wiki page. Standard OLS/logistic - SKIP.
 
 ## Limitations
-- Competition measures could capture talent supply (size/quality of talent pool) rather than demand
-- Peer selection could be opportunistic (justify higher pay) rather than talent-driven
-- Sample limited to firms with Execucomp data (large public firms)
-- Network measures require sufficient peer disclosure coverage
+- Observational data: endogeneity concerns despite extensive controls (reverse causality, omitted variables)
+- Peer selection may reflect opportunistic benchmarking (though network aggregation mitigates this)
+- Sample limited to U.S. public firms with proxy disclosures (excludes private firms, international)
+- Talent flow measure limited to top 5 executives (may miss lateral moves)
+- Louvain algorithm parameters affect classification granularity (sensitivity not tested)
 
 ## Related Papers
+> **Process**: List key papers with relevance first. Enrich with full citations from paper's Reference section.
+> **Linking**: Link only to papers already in wiki database.
+
 | Authors | Year | Title | Relevance | Wiki Link |
 |---------|------|-------|-----------|-----------|
-| Oyer | 2004 | Why do firms use incentives that are unrelated to worker performance? | Theory of outside opportunities and pay for luck | [not in wiki] |
-| Murphy and Zabojnik | 2004, 2007 | Managerial capital and firm performance | Theory of talent transferability | [not in wiki] |
-| Faulkender and Yang | 2010 | Inside the "Black Box" of compensation peer selection | Alternative view: opportunistic peer selection | [not in wiki] |
-| Hoberg and Phillips | 2016 | Text-based network industries and endogenous product differentiation | Network-based market classification precedent | [not in wiki] |
-| Fee and Hadlock | 2003 | Raids, recruiting, and the competition for managerial talent | Talent flow precedent | [not in wiki] |
+| Oyer, P. | 2004 | Why Do Firms Use Incentives That Have No Incentive Effects? | Theory of outside opportunities explaining pay-for-luck and RPE puzzle | [not in wiki] |
+| Fama, E.F. | 1980 | Agency Problems and the Theory of the Firm | Theory of labor market as incentive device | [not in wiki] |
+| Faulkender, M. and Yang, J. | 2010 | Inside the Black Box: The Role and Composition of Compensation Peer Groups | Prior work on peer selection determinants | [not in wiki] |
+| Albuquerque, A.M., De Franco, G. and Verdi, R.S. | 2013 | Peer Choice in CEO Compensation | Benchmarking literature foundation | [not in wiki] |
+| Hoberg, G. and Phillips, G. | 2016 | Text-Based Network Industries and Endogenous Product Differentiation | Network analysis methodology precedent | [not in wiki] |
+| Core, J.E., Holthausen, R.W. and Larcker, D.F. | 1999 | Corporate Governance, CEO Compensation, and Firm Performance | Research design for future performance tests | [not in wiki] |
+| Daniel, N.D., Li, Y. and Naveen, L. | 2020 | Symmetry in Pay for Luck | Pay-for-luck measurement methodology | [not in wiki] |
+| Murphy, K.J. and Zabojnik, J. | 2004 | CEO Pay and Appointments: A Market-Based Explanation for Recent Trends | Talent transferability theory | [not in wiki] |
+| Lazear, E.P. and Rosen, S. | 1981 | Rank-Order Tournaments as Optimum Labor Contracts | Tournament theory foundation | [not in wiki] |
+| Fee, C.E. and Hadlock, C.J. | 2003 | Raids, Rewards, and Reputations in the Market for Managerial Talent | Talent flow and executive mobility literature | [not in wiki] |

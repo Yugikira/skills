@@ -1,0 +1,8 @@
+{
+  "name": "libby-plugin",
+  "version": "1.0.0",
+  "description": "Libby skills for citation extraction, paper fetching, and web search",
+  "author": {
+    "name": "Yugi"
+  }
+}
