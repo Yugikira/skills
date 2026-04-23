@@ -17,9 +17,9 @@
         "matcher": "Bash",
         "hooks": [
           {
-            "matcher": "libby.*( --serpapi (auto|ask)| --source serpapi)",
             "type": "prompt",
-            "message": "Serpapi uses API quota. Proceed?"
+            "prompt": "Serpapi uses API quota. Proceed?",
+            "if": "Bash(libby*( --serpapi auto| --serpapi ask| --source serpapi))"
           }
         ]
       }
