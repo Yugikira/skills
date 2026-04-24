@@ -6,6 +6,59 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-04-24] - Wiki Collision Detection (Phase 3.6)
+
+### Added
+
+- **Phase 3.6 Wiki Collision Check**: New phase in kb-ingest for preventive deduplication
+  - Runs BEFORE wiki page creation to prevent duplicate entries
+  - Checks existing `wiki/{category}/_index.md` for exact matches and similar candidates
+- **Scripts/check_wiki_collision.py**: New collision detection script (~280 lines)
+  - Normalizes names for comparison (lowercase, remove punctuation, strip underscores)
+  - Detects exact matches → `update_existing` decision
+  - Finds similar candidates via keyword overlap scoring → dispatch agent for semantic comparison
+  - Filters non-wiki entries: `[not yet in wiki]`, `[skip - derived]`, `[common concept - no wiki]`
+  - Outputs JSON for subagent consumption
+
+### Changed
+
+- **kb-ingest workflow**: Added Phase 3.6 between Link Related Papers (3.5) and Wiki Update (Phase 4)
+  - Orchestrator runs collision script → dispatches parallel subagents → applies decisions
+  - Subagents per category: concepts, variables, constructs, methods, theories (5 agents)
+  - Decision types: `update_existing`, `create_new`, `create_crosslink`, `rename_proposed`
+- **Script paths**: Added fallback `|| \` pattern for all script invocations
+  - Handles agents running from wiki root vs kb-plugin directory
+  - Format: `python Scripts/{script}.py ... || python kb-plugin/Scripts/{script}.py ...`
+- **Dependencies section**: Updated to show correct `kb-plugin/Scripts/` paths
+
+### Decision Logic
+
+| Decision | When | Action |
+|----------|------|--------|
+| `update_existing` | Exact match or >70% similarity | Append paper source to existing page |
+| `create_new` | No collision or marginal similarity | Create new wiki page |
+| `create_crosslink` | Same measurement target, different formula | Alternative variable linking to canonical |
+| `rename_proposed` | Similar name, different concept | Disambiguate proposed name in summary |
+
+### Rationale
+
+User feedback: "The agent just creates new wiki pages after generating summary and does not execute a checking on existing wikis."
+
+Previous workflow created pages freely → required post-hoc cleanup via kb-consolidate. New workflow prevents duplicates proactively, maintaining knowledge base consistency.
+
+### Testing Results
+
+- `cheng_2016`: 1 exact match (`Brokerage_Size`), 18 new variables, 3 new concepts
+- `li_2026`: All entries exact match, non-wiki entries filtered correctly
+- Script works from both wiki root and kb-plugin directory
+
+### Updated Files
+
+- `Scripts/check_wiki_collision.py` - New collision detection script
+- `skills/kb-ingest/SKILL.md` - Added Phase 3.6, script path fallbacks
+
+---
+
 ## [2026-04-24] - Wiki Consolidation Skill
 
 ### Added
