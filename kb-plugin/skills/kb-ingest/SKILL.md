@@ -125,6 +125,67 @@ Run script to check wiki links:
 python Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update
 ```
 
+#### 3.6 Wiki Collision Check
+
+**Purpose**: Check existing wiki entries BEFORE creating new ones. Prevent duplicates and maintain knowledge base consistency.
+
+**Step 1: Run Collision Detection Script**
+
+```bash
+python Scripts/check_wiki_collision.py --summary source/summary/{citekey}_summary.md --json
+```
+
+Output JSON identifies:
+- `exact_match`: Existing entry with same name → decision: `update_existing`
+- `candidates`: Similar entries for semantic comparison → dispatch agent for decision
+
+**Step 2: Dispatch Parallel Subagents (Per Category)**
+
+For each category with candidates (concepts, variables, constructs, methods, theories), dispatch an agent:
+
+```
+Agent prompt template (Concept Checker):
+---
+You are checking concept wiki collision for kb-ingest.
+
+Input:
+- Summary file: {path}
+- Collision candidates: {JSON from script}
+
+For each concept with similar existing entries:
+1. Read wiki/concepts/{existing_name}.md
+2. Read summary's Concepts Defined table for proposed definition
+3. Compare definitions and decide:
+   - Identical definition → "update_existing"
+   - >70% keyword overlap → "update_existing"
+   - Different concept, similar name → "rename_proposed" + suggest new name
+   - <70% similarity → "create_new"
+
+Output JSON:
+{"decisions": [{"proposed": "...", "existing": "...", "decision": "...", "new_name": "..."}]}
+---
+```
+
+**Decision Types**:
+
+| Decision | When | Action |
+|----------|------|--------|
+| `update_existing` | Exact match or high similarity | Append paper source to existing page |
+| `create_new` | No collision or marginal similarity | Create new wiki page |
+| `create_crosslink` | Same measurement target, different formula | Alternative variable page linking to canonical |
+| `rename_proposed` | Similar name, different concept | Disambiguate proposed name in summary |
+
+**Step 3: Update Summary Wikilinks**
+
+Orchestrator applies agent decisions:
+- `update_existing`: Change wikilink to existing page name
+- `rename_proposed`: Update proposed name in summary tables
+- `create_crosslink`: Note alternative in concept table
+
+**Step 4: Proceed to Phase 4**
+
+Phase 4 now creates pages based on resolved collision decisions.
+
 ### Phase 4: Wiki Update (Orchestrator)
 
 After summary finalized, **Orchestrator** creates/updates wiki pages **following templates exactly** (see kb-extract for detailed template guidance):
@@ -188,6 +249,7 @@ Use templates from templates/. Use Obsidian [[filename]] linking.
 - kb-extract skill (kb-extract/SKILL.md) - extraction guidance
 - kb-verify skill (kb-verify/SKILL.md) - verification agent
 - Python Scripts/check_related_papers.py - wiki link checker
+- Python Scripts/check_wiki_collision.py - collision detection (Phase 3.6)
 - Python Scripts/update_indexes.py - index updater
 
 ## Error Handling
