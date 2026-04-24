@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-04-24] - Wiki Consolidation Skill
+
+### Added
+
+- **kb-consolidate**: New skill replacing kb-concept-verify with expanded scope
+  - Covers concepts, constructs, and variables (not just Economic Consequences)
+  -- Detects two types of similar variables:
+    - Type A: Identical computation (same formula, different names)
+    - Type B: Conceptually similar (same underlying phenomenon, different operationalizations - count, log, capped, indicator)
+  - Section targeting: `--section {name}` for specific sections
+  - Type filtering: `--concepts`, `--constructs`, `--variables`
+- **kb-ingest auto-trigger**: Phase 6 now auto-runs kb-consolidate after batch ingestion with >=10 papers
+
+### Changed
+
+- **Canonical + cross-link merge strategy**: 
+  - Canonical variable page created for most commonly used name
+  - Alternative operationalizations become cross-link pages with formula type notes
+  - Concept tables note: "Also measured as: {alt1} (capped), {alt2} (indicator)"
+- **Detection patterns expanded**: From identical formulas to same underlying measurement target
+
+### Removed
+
+- **kb-concept-verify**: Replaced by kb-consolidate
+
+### Updated Files
+
+- `skills/kb-consolidate/SKILL.md` - New comprehensive consolidation skill
+- `skills/kb-ingest/SKILL.md` - Added Phase 6 auto-trigger
+- `.claude-plugin/marketplace.json` - Updated skill reference
+- `skills/kb-concept-verify/` - Removed
+
+---
+
 ## [2026-04-23] - Analytical Model Support, Scanned PDF Handling, Constructs Category
 
 ### Added

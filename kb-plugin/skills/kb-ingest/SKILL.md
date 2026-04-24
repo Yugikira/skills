@@ -164,14 +164,21 @@ Use templates from templates/. Use Obsidian [[filename]] linking.
 1. Run `python Scripts/update_indexes.py`
 2. Updates all _index.md files
 
-### Phase 6: Log Entry
+### Phase 6: Log Entry and Consolidation Trigger
 
-Append to `wiki/log.md`:
+1. Append to `wiki/log.md`:
 ```markdown
 ## [YYYY-MM-DD] ingest | {citekey} | {title}
 - Created: wiki/concepts/{concept1}.md, ...
 - Summary: source/summary/{citekey}_summary.md
 ```
+
+2. **Consolidation Trigger (Batch mode only)**:
+   - Count papers: `ls source/summary/*.md | wc -l` (or equivalent Glob count)
+   - If count >= 10:
+     - Output: "📚 {count} papers processed. Running kb-consolidate to maintain wiki quality."
+     - Auto-invoke: `/kb-consolidate`
+   - Note: Manual `/kb-consolidate` available for targeted audits anytime
 
 ## Dependencies
 
