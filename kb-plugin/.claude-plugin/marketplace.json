@@ -1,0 +1,30 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "kb-plugin",
+  "description": "Knowledge Base plugin for academic paper ingestion, querying, and wiki management",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Yugi"
+  },
+  "plugins": [
+    {
+      "name": "kb-plugin",
+      "description": "Knowledge Base skills for academic paper ingestion, querying, and wiki management",
+      "version": "1.0.0",
+      "author": {
+        "name": "Yugi"
+      },
+      "source": "./",
+      "category": "learning",
+      "keywords": ["knowledge-base", "research", "wiki", "papers", "academic"],
+      "skills": [
+        "./skills/kb-ingest",
+        "./skills/kb-query",
+        "./skills/kb-lint",
+        "./skills/kb-extract",
+        "./skills/kb-verify",
+        "./skills/kb-consolidate"
+      ]
+    }
+  ]
+}
