@@ -192,6 +192,8 @@ Phase 4 now creates pages based on resolved collision decisions.
 
 ### Phase 4: Wiki Update (Orchestrator)
 
+**Template Path**: Read templates from `templates/*.md` in kb-plugin root. If working from a subdirectory and path fails, use absolute path `kb-plugin/templates/*.md`.
+
 After summary finalized, **Orchestrator** creates/updates wiki pages **following templates exactly** (see kb-extract for detailed template guidance):
 
 1. **Concepts** → create wiki/concepts/{concept}.md
@@ -222,7 +224,7 @@ After summary finalized, **Orchestrator** creates/updates wiki pages **following
 5. **Theories** → create wiki/theories/{theory}.md
    - Use templates/theory.md structure
 
-Use templates from templates/. Use Obsidian [[filename]] linking.
+Use templates from templates/ (fallback to kb-plugin/templates/ if path fails). Use Obsidian [[filename]] linking.
 
 ### Phase 5: Index Updates
 

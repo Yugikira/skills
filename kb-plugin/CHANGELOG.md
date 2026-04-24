@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-04-24] - Windows Encoding and Template Path Fixes
+
+### Fixed
+
+- **check_wikilinks.py**: Windows GBK encoding issue
+  - Added `sys.stdout.reconfigure(encoding="utf-8", errors="replace")` for Windows platform
+  - Prevents print failures with non-ASCII characters in file paths or error messages
+- **kb-ingest and kb-extract skills**: Template path confusion
+  - Added explicit `**Template Path**` guidance at wiki creation sections
+  - Added fallback instruction: use `kb-plugin/templates/*.md` if relative path fails
+  - Helps agent find templates when working from subdirectories
+
+---
+
 ## [2026-04-24] - Wiki Collision Detection (Phase 3.6)
 
 ### Added

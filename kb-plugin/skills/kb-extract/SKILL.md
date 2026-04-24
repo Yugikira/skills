@@ -238,6 +238,8 @@ Ground Truth findings reference paper names: "InDegree (see Variables table) has
 
 ## Wiki Creation (Orchestrator's Job)
 
+**Template Path**: Read templates from `templates/*.md` in kb-plugin root. If working from a subdirectory and path fails, use absolute path `kb-plugin/templates/*.md`.
+
 After summary finalized, create wiki pages **following templates exactly**:
 
 ### 1. Concepts → wiki/concepts/{concept}.md
@@ -292,4 +294,4 @@ Use `templates/method.md` structure. Only create for novel designs/models.
 
 Use `templates/theory.md` structure. Fill all sections from paper.
 
-Use templates from templates/. Use Obsidian [[filename]] links.
+Use templates from templates/ (fallback to kb-plugin/templates/ if path fails). Use Obsidian [[filename]] links.

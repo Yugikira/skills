@@ -18,6 +18,11 @@ import sys
 from pathlib import Path
 from collections import defaultdict
 
+# Fix Windows console encoding issue
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 SCRIPT_DIR = Path(__file__).parent
 ROOT_DIR = SCRIPT_DIR.parent.parent
 
