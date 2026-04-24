@@ -122,7 +122,9 @@ Invoke kb-verify skill to check Ground Truth findings:
 
 Run script to check wiki links:
 ```bash
-python Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update
+# Try from wiki root first, fallback to kb-plugin path
+python Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update || \
+python kb-plugin/Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update
 ```
 
 #### 3.6 Wiki Collision Check
@@ -132,7 +134,9 @@ python Scripts/check_related_papers.py --summary source/summary/{citekey}_summar
 **Step 1: Run Collision Detection Script**
 
 ```bash
-python Scripts/check_wiki_collision.py --summary source/summary/{citekey}_summary.md --json
+# Try from wiki root first, fallback to kb-plugin path
+python Scripts/check_wiki_collision.py --summary source/summary/{citekey}_summary.md --json || \
+python kb-plugin/Scripts/check_wiki_collision.py --summary source/summary/{citekey}_summary.md --json
 ```
 
 Output JSON identifies:
@@ -222,7 +226,10 @@ Use templates from templates/. Use Obsidian [[filename]] linking.
 
 ### Phase 5: Index Updates
 
-1. Run `python Scripts/update_indexes.py`
+1. Run index updater with fallback:
+   ```bash
+   python Scripts/update_indexes.py || python kb-plugin/Scripts/update_indexes.py
+   ```
 2. Updates all _index.md files
 
 ### Phase 6: Log Entry and Consolidation Trigger
@@ -248,9 +255,10 @@ Use templates from templates/. Use Obsidian [[filename]] linking.
 - paddle-pdf skill (../paddle-pdf/SKILL.md)
 - kb-extract skill (kb-extract/SKILL.md) - extraction guidance
 - kb-verify skill (kb-verify/SKILL.md) - verification agent
-- Python Scripts/check_related_papers.py - wiki link checker
-- Python Scripts/check_wiki_collision.py - collision detection (Phase 3.6)
-- Python Scripts/update_indexes.py - index updater
+- Python kb-plugin/Scripts/check_related_papers.py - wiki link checker
+- Python kb-plugin/Scripts/check_wiki_collision.py - collision detection (Phase 3.6)
+- Python kb-plugin/Scripts/update_indexes.py - index updater
+- **Note**: Scripts run from wiki root; use fallback `kb-plugin/Scripts/` if path fails
 
 ## Error Handling
 
