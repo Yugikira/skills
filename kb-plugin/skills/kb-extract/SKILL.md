@@ -184,6 +184,7 @@ Each finding must be **reproducible** - use the paper's actual variable names:
 ### Wiki Page Criteria
 
 **CREATE wiki/variables/ page for** (directly measurable/basic):
+- **BE FOCUS**: Focus on variables central to the paper.
 - **Raw counts**: Number of items (e.g., peer selections, employees, transactions)
 - **Indicators**: Binary variables (0/1 flags for observable events)
 - **Ratios from raw data**: Computable from observable inputs (e.g., proportions, percentages)
@@ -196,6 +197,7 @@ Each finding must be **reproducible** - use the paper's actual variable names:
 - **Standardized variables**: Z-scores, normalized versions of other variables
 - **Fitted/predicted values**: Outputs from regression models (e.g., "Fitted Pay")
 - **Generic names**: Variables with non-descriptive names that could apply to any paper
+- **Control Variables**: **DO NOT** create wiki page for control variables not essential to the paper.
 
 ### Variable Naming Guidelines
 
