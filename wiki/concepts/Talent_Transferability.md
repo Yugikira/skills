@@ -41,8 +41,8 @@ Three operationalizations capturing different scope levels:
 ## Economic Consequences of Talent Transferability
 | Consequence | Mechanism | Key Paper | Finding |
 |-------------|-----------|-----------|---------|
-| Pay duration | Longer vesting when transferability high | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | PCOMP1 increases Pay Duration 0.27 years |
-| Equity share | More equity when retention needed | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Clustering associated with equity pay |
+| Pay duration | Longer vesting when transferability high | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | PCOMP1 increases Pay Duration by 0.038 years (p<0.05) |
+| Equity share | More equity when retention needed | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Clustering beta=0.048*** (t=3.772) on Ln(Total Pay) |
 | CEO pay level | Transferable executives command higher pay | Murphy & Zabojnik [2007] | Generalist premium in CEO pay |
 
 ## Identification Strategy

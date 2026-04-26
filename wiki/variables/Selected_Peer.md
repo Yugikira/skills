@@ -36,7 +36,7 @@ Selected_Peer_{jt} = 1 if firm i discloses firm j as compensation peer in DEF 14
 ## Papers Using This Variable
 | Paper | How Used | Key Findings |
 |-------|----------|--------------|
-| [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Direct Peer classification | Selected peers are closest competitors; beta=1.532 on Talent Flow |
+| [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Direct Peer classification | Selected peers are closest competitors; beta=2.787*** (z=13.565) on Talent Flow; relative margin 16.14 (ranked 1st) |
 | Faulkender & Yang [2010] | Peer selection determinants | Size, industry, talent flows predict selection |
 | Albuquerque et al. [2013] | Benchmarking effects | Selected peers affect CEO pay |
 

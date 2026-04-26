@@ -39,8 +39,8 @@ Primary operationalization through three classification types with increasing sc
 ## Economic Consequences of Managerial Labor Classifications
 | Consequence | Mechanism | Key Paper | Finding |
 |-------------|-----------|-----------|---------|
-| Talent flows | Executives move to firms in same MLC | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Direct Peer beta=1.532 (p<0.001) on Talent Flow |
-| Tournament incentives | Pay gap with MLC peers creates external tournament | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Louvain pay gap predicts future ROA (beta=0.008) |
+| Talent flows | Executives move to firms in same MLC | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Selected Peer beta=2.787*** (z=13.565) on Talent Flow; relative margin 16.14 |
+| Tournament incentives | Pay gap with MLC peers creates external tournament | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Louvain Pay Gap beta=0.027*** (t=2.860) on Tobin's Q; FF48/TNIC2 insignificant |
 | Compensation benchmarking | Peers set reservation wage reference | Albuquerque et al. [2013] | Peer pay affects CEO compensation |
 
 ## Identification Strategy

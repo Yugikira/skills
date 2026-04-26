@@ -12,6 +12,7 @@ Ingest academic papers into the Knowledge Base, extracting concepts, theories, v
 - `/kb-ingest {doi}` - Ingest paper by DOI (e.g., `/kb-ingest 10.1234/example`)
 - `/kb-ingest "{title}"` - Ingest paper by title
 - `/kb-ingest {citekey}` - Process existing paper in `raw/papers/{citekey}/`
+- `/kb-ingest {citekey1} {citekey2} ...` - Batch process multiple papers in `raw/papers/`
 - `/kb-ingest --batch` - Process all unprocessed PDFs in `raw/data/`
 
 ## Domain Scope
@@ -35,6 +36,16 @@ Papers outside these domains will prompt for user confirmation.
 3. Invoke libby-fetch: `/libby fetch {doi}`
 
 **Case C: Local PDF in raw/data/**
+
+**Step 0: Check for well-organized paper (skip extraction if possible)**
+
+If the PDF is inside a subfolder of `raw/data/` (e.g., `raw/data/some_folder/paper.pdf`):
+1. Run: `ls raw/data/{folder_name}/` to list directory contents
+2. If the folder contains a `.bib` file alongside the PDF — paper is already well-organized:
+   a. Run: `mv raw/data/{folder_name} raw/papers/` to move the entire folder
+   b. Extract citekey from `.bib` filename or folder name
+   c. **Skip directly to Phase 2: PDF Conversion**
+3. If no `.bib` file or PDF is bare (not in a subfolder) — continue to Step 1
 
 **IMPORTANT: Do NOT use WebSearch or WebFetch. Follow these exact Bash/MCP tool steps:**
 
@@ -73,158 +84,157 @@ For each paper:
 2. If not, invoke paddle-pdf: `/paddle-pdf convert raw/papers/{citekey}/{citekey}.pdf -o raw/papers/{citekey}/`
 3. Verify output exists. Note: paddle-pdf automatically names output as `{citekey}.md` (not `output.md`)
 
-### Phase 3: Summary Creation (Orchestrator + Sub-agents)
+### Phase 3: Extraction & Wiki Drafting (Single Subagent)
 
-**Token-efficient workflow**: Orchestrator creates summary, sub-agents verify and enrich.
+**Token-efficient workflow**: ONE subagent handles all paper reading, summary creation, and wiki page drafting. No further sub-agents are dispatched.
 
-#### 3.1 Orchestrator Creates Initial Summary
+For batch (multiple citekeys), process papers sequentially.
 
-Read paper key sections directly:
-- Read: **Introduction, Hypothesis Development, Literature Review** (for concept definitions)
-- Read: Abstract, Results tables, Variable Definitions (in context or appendix)
-- Create `source/summary/{citekey}_summary.md` using template
+#### 3.1 Dispatch Extraction + Wiki Subagent
 
-Include:
-- **3-5 key Claimed findings** FIRST (authors' interpretations)
-- **3-5 key Ground Truth findings** SECOND (empirical support)
-- **Correspondence**: Ground Truth Finding N should support Claim N
-- **Hypothesis section**: Analyze argument structure (see kb-extract guidance)
-- **Concepts Defined table**: Abstract definitions + construct links
-- **Measures/Variables table**: Computational definitions + wiki name mapping
-- **Methods section**: Note if standard vs novel (for wiki decision)
+Dispatch a SINGLE subagent. **CRITICAL**: This agent must complete ALL work itself — it MUST NOT dispatch further sub-agents.
 
-#### 3.2 Dispatch Hypothesis Agent (inline)
-
-If hypothesis is complex, dispatch general-purpose agent:
 ```
-Agent prompt: "Read raw/papers/{citekey}/{citekey}.md Hypothesis Development section.
-Analyze: 1) Hypothesis statement, 2) Premises and sources, 3) Deductive/Inductive approach.
-Return structured Hypothesis section content."
-```
+Agent prompt for extraction subagent:
+---
+You are extracting knowledge from an academic paper and creating wiki pages for the Knowledge Base.
 
-#### 3.3 Dispatch References Agent (inline)
+Input files:
+- Paper markdown: raw/papers/{citekey}/{citekey}.md
+- Summary template: kb-plugin/templates/paper_summary.md
+- Extraction guidance: kb-extract skill (what to extract, how to format)
+- Wiki creation guidance: kb-wiki skill (how to create wiki pages, what to skip)
 
-After creating Related Papers table, dispatch agent to enrich citations:
-```
-Agent prompt: "Grep raw/papers/{citekey}/{citekey}.md for Reference/References section.
-Match citations in Related Papers table to full entries.
-Return: for each citation, extract authors, year, title."
-```
+YOUR JOB (complete all steps yourself -- DO NOT dispatch sub-agents or invoke other skills):
 
-#### 3.4 Dispatch kb-verify Agent
+STEP 1: READ the paper
+- Read Introduction, Hypothesis Development, Literature Review, Results/Discussion, Variable Definitions, **Reference/References section**
 
-Invoke kb-verify skill to check Ground Truth findings:
-- kb-verify returns YES/NO for each finding
-- If any NO: Orchestrator edits failing findings directly
-- Add missing definitions, no new interpretations
+STEP 2: CREATE summary at source/summary/{citekey}_summary.md
+Follow kb-extract guidance and paper_summary.md template:
+- 3-5 Claimed findings (authors' interpretations)
+- 3-5 Ground Truth findings (empirical support, with correspondence to claims)
+- Hypothesis section with argument structure analysis
+- Concepts Defined table (abstract definitions + construct links)
+- Measures/Variables table (Paper Variable → Wiki Name mapping + computational definitions)
+- Methods section (note standard vs novel for wiki decision)
+- **Related Papers table**: For each cited paper, extract full details (authors, year, title, journal) from the References section. Do NOT leave citations as bare citekeys.
 
-#### 3.5 Link Related Papers
+STEP 2.5: SELF-VERIFY Ground Truth ↔ Claim correspondence
+Before creating wiki pages, re-check each Ground Truth finding:
+- Does GT Finding N actually support Claimed Finding N?
+- Are the GT findings reproducible? (variable names match paper, formulas are exact, coefficients and p-values are correct)
+- If any check fails: re-read the relevant paper section and fix the summary now
+- This is a self-check — the paper is already in your context, no re-reading cost
 
-Run script to check wiki links:
+STEP 3: RUN related papers linker
 ```bash
-# Try from wiki root first, fallback to kb-plugin path
 python Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update || \
 python kb-plugin/Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update
 ```
 
-#### 3.6 Wiki Collision Check
+STEP 4: CREATE wiki pages
+Follow kb-wiki skill guidance:
+- Use templates from templates/ (fallback kb-plugin/templates/)
+- Concepts → wiki/concepts/{concept}.md (for concepts in Concepts Defined table)
+- Variables → wiki/variables/{variable}.md (ONLY for directly measurable variables; skip derived/PCA/composite)
+- Constructs → wiki/constructs/{construct}.md (for analytical model parameters)
+- Methods → wiki/methods/{method}.md (ONLY for novel designs/models; skip standard methods)
+- Theories → wiki/theories/{theory}.md (if paper contributes a theory)
+- Use Obsidian [[filename]] linking
+- Include first_used/first_defined linking back to summary
 
-**Purpose**: Check existing wiki entries BEFORE creating new ones. Prevent duplicates and maintain knowledge base consistency.
+OUTPUT: Return the summary path and list of created wiki pages by category.
+---
+```
 
-**Step 1: Run Collision Detection Script**
+### Phase 4: Wiki Review & Merge (Orchestrator)
+
+After subagent returns, **Orchestrator** reviews and finalizes everything. This is a lightweight quality check — fix only clear errors, don't re-read the full paper.
+
+#### 4.1 Review Summary Quality
+
+1. Read source/summary/{citekey}_summary.md
+2. Quick check:
+   - Claimed findings correspond to Ground Truth findings
+   - Variable names in GT findings have computational definitions
+   - Concepts Defined table entries have definitions (not empty)
+   - Measures/Variables table has Paper Variable / Wiki Name mapping
+3. Fix minor issues directly
+
+#### 4.2 Review Wiki Pages
+
+1. Read each wiki page created by the subagent
+2. Quick check:
+   - Required sections are filled (Definition, Computation, etc.)
+   - Obsidian [[filename]] links are correct
+   - Variable naming follows kb-wiki conventions
+   - Standard methods were correctly skipped
+   - Derived/composite variables were correctly skipped
+3. Fix minor issues directly
+
+#### 4.3 Wiki Collision Resolution
+
+**Purpose**: Check newly created pages against **pre-existing** wiki entries (from before this ingestion). The subagent already created the pages — now we check if any should be merged into older existing pages.
+
+**Step 1: Collect New Pages from Subagent Output**
+
+From the subagent's return value, collect all created wiki page names by category. For batch (multiple papers), collect all pages from all papers combined.
+
+**Step 2: Run Post-Ingest Collision Script**
+
+Write the new page list to a temp JSON file, then run the script:
 
 ```bash
-# Try from wiki root first, fallback to kb-plugin path
-python Scripts/check_wiki_collision.py --summary source/summary/{citekey}_summary.md --json || \
-python kb-plugin/Scripts/check_wiki_collision.py --summary source/summary/{citekey}_summary.md --json
+# Write new pages list (example format)
+# echo '{"concepts":["Name1"],"variables":["Var1"],...}' > /tmp/new_pages_{citekey}.json
+
+python Scripts/check_new_page_collision.py --new-pages /tmp/new_pages_{citekey}.json --json || \
+python kb-plugin/Scripts/check_new_page_collision.py --new-pages /tmp/new_pages_{citekey}.json --json
 ```
 
-Output JSON identifies:
-- `exact_match`: Existing entry with same name → decision: `update_existing`
-- `candidates`: Similar entries for semantic comparison → dispatch agent for decision
+This script checks new pages against **pre-existing** entries only — it excludes the new pages themselves from the existing pool. Output:
 
-**Step 2: Dispatch Parallel Subagents (Per Category)**
+- `exact_match`: A pre-existing page has the same normalized name → merge needed
+- `candidates`: Pre-existing pages with similar names/definitions → semantic review needed
+- Entries with no matches are silently skipped (no action needed)
 
-For each category with candidates (concepts, variables, constructs, methods, theories), dispatch an agent:
+The `_summary` key shows: `total_new_pages`, `exact_matches`, `needs_semantic_review`, `no_collision`.
 
-```
-Agent prompt template (Concept Checker):
----
-You are checking concept wiki collision for kb-ingest.
+**Step 3: Resolve Each Collision via Semantic Comparison**
 
-Input:
-- Summary file: {path}
-- Collision candidates: {JSON from script}
+For each entry in the collision report:
 
-For each concept with similar existing entries:
-1. Read wiki/concepts/{existing_name}.md
-2. Read summary's Concepts Defined table for proposed definition
-3. Compare definitions and decide:
-   - Identical definition → "update_existing"
-   - >70% keyword overlap → "update_existing"
-   - Different concept, similar name → "rename_proposed" + suggest new name
-   - <70% similarity → "create_new"
+1. **If `exact_match` present**: Read the pre-existing page. If the new page's definition truly duplicates it → `merge_into_existing`. If same name but different concept → `rename_new_page`.
 
-Output JSON:
-{"decisions": [{"proposed": "...", "existing": "...", "decision": "...", "new_name": "..."}]}
----
-```
+2. **If `candidates` non-empty**: For each candidate, **read `wiki/{category}/{candidate_name}.md`** fully. Compare definitions at the **phenomenon level**:
+   - **Same underlying phenomenon?** Both describe the same causal mechanism, theoretical scope, and domain → `merge_into_existing`
+   - **Different phenomenon despite keyword overlap?** Definitions describe different things → `keep_new`
+   - **Subset relationship?** New page is a narrower case of existing → `merge_into_existing` (append as sub-case)
+   - **Superset relationship?** New page is broader → `keep_new` + add cross-reference from existing page
+   - **Same name, different concept?** → `rename_new_page` + suggest disambiguated name
+
+**CRITICAL**: Do NOT use keyword overlap percentage to decide. Read the actual definition text and reason about whether the phenomena are genuinely the same.
 
 **Decision Types**:
 
 | Decision | When | Action |
 |----------|------|--------|
-| `update_existing` | Exact match or high similarity | Append paper source to existing page |
-| `create_new` | No collision or marginal similarity | Create new wiki page |
-| `create_crosslink` | Same measurement target, different formula | Alternative variable page linking to canonical |
-| `rename_proposed` | Similar name, different concept | Disambiguate proposed name in summary |
+| `merge_into_existing` | Same underlying phenomenon | Merge new page content into existing page; delete the new page; update wikilinks |
+| `keep_new` | Different phenomenon | Keep new page as-is |
+| `create_crosslink` | Same measurement target, different formula | Add cross-link between pages |
+| `rename_new_page` | Similar name, different concept | Rename new page file, update all wikilinks |
 
-**Step 3: Update Summary Wikilinks**
+#### 4.4 Apply Collision Decisions
 
-Orchestrator applies agent decisions:
-- `update_existing`: Change wikilink to existing page name
-- `rename_proposed`: Update proposed name in summary tables
-- `create_crosslink`: Note alternative in concept table
+- `merge_into_existing`: Copy new content from the new page into the pre-existing page (add paper to Papers Using, merge determinants/consequences/etc.), then **delete the new page file**. Update all wikilinks pointing to the new page to point to the existing page instead.
+- `rename_new_page`: Rename the new wiki page file, update all wikilinks in the summary and other pages.
+- `create_crosslink`: Add cross-link between the two pages, note formula/definition difference.
+- `keep_new`: Keep new page as-is — it's genuinely distinct.
 
-**Step 4: Proceed to Phase 4**
+#### 4.5 Finalize
 
-Phase 4 now creates pages based on resolved collision decisions.
-
-### Phase 4: Wiki Update (Orchestrator)
-
-**Template Path**: Read templates from `templates/*.md` in kb-plugin root. If working from a subdirectory and path fails, use absolute path `kb-plugin/templates/*.md`.
-
-After summary finalized, **Orchestrator** creates/updates wiki pages **following templates exactly** (see kb-extract for detailed template guidance):
-
-1. **Concepts** → create wiki/concepts/{concept}.md
-   - Use templates/concept.md structure
-   - Fill: Definition, Constructs & Variables (required)
-   - Fill optional: Alternative Definitions, Determinants, Consequences, etc.
-
-2. **Variables** → CHECK criteria before creating wiki/variables/{variable}.md
-   - Use templates/variable.md structure
-   - Create for: directly measurable (raw counts, indicators, ratios, network stats)
-   - Skip for: derived/composite (PCA components, indices, fitted values)
-   - Skip for: analytical model parameters (these are constructs, NOT variables)
-   - Use Wiki Names (common-sense, not paper abbreviations)
-
-3. **Constructs** → for analytical model papers, create wiki/constructs/{construct}.md
-   - Use templates/construct.md structure
-   - Create for: model parameters (λ, σ², etc.) and definitional constructs
-   - Fill: Definition, Mathematical Representation, Role in Model
-   - Top journal filtering: max 5 entries (oldest + newest)
-
-4. **Methods** → CHECK criteria before creating wiki/methods/{method}.md
-   - For analytical models: use templates/method_analytical.md
-   - For empirical designs: use templates/method.md
-   - Create for: novel designs, analytical models
-   - Skip for: standard methods (OLS, DiD, 2SLS, GMM, etc.)
-   - Model Variations: include comparative statics + future paper updates
-
-5. **Theories** → create wiki/theories/{theory}.md
-   - Use templates/theory.md structure
-
-Use templates from templates/ (fallback to kb-plugin/templates/ if path fails). Use Obsidian [[filename]] linking.
+After all checks pass, proceed to Phase 5.
 
 ### Phase 5: Index Updates
 
@@ -256,9 +266,9 @@ Use templates from templates/ (fallback to kb-plugin/templates/ if path fails). 
 - libby-fetch skill (../libby/fetch/SKILL.md)
 - paddle-pdf skill (../paddle-pdf/SKILL.md)
 - kb-extract skill (kb-extract/SKILL.md) - extraction guidance
-- kb-verify skill (kb-verify/SKILL.md) - verification agent
+- kb-wiki skill (kb-wiki/SKILL.md) - wiki creation guidance
 - Python kb-plugin/Scripts/check_related_papers.py - wiki link checker
-- Python kb-plugin/Scripts/check_wiki_collision.py - collision detection (Phase 3.6)
+- Python kb-plugin/Scripts/check_new_page_collision.py - post-ingest collision detection (Phase 4.3)
 - Python kb-plugin/Scripts/update_indexes.py - index updater
 - **Note**: Scripts run from wiki root; use fallback `kb-plugin/Scripts/` if path fails
 

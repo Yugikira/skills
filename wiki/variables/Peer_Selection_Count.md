@@ -37,7 +37,7 @@ Data source: ISS Incentive Lab database, derived from DEF 14A proxy statement di
 ## Papers Using This Variable
 | Paper | How Used | Key Findings |
 |-------|----------|--------------|
-| [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Main competition measure | Beta=0.061 (p<0.001) on Ln(Total Pay); predicts talent flows |
+| [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Main competition measure | Beta=0.105*** (t=7.363) on Ln(Total Pay) (n=9,798); strongest predictor of talent flows |
 | Faulkender & Yang [2010] | Peer selection determinant | InDegree driven by size, industry similarity |
 
 ## Interpretations

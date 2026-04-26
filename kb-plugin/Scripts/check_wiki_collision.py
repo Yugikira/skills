@@ -364,14 +364,28 @@ def check_collisions(summary_path: Path) -> dict:
             else:
                 # Find similar candidates
                 candidates = find_similar_candidates(proposed_name, definition, existing)
-                proposed_list.append({
-                    "proposed": proposed_name,
-                    "exact_match": None,
-                    "candidates": candidates
-                })
+                # Only include entries that need attention
+                if candidates:
+                    proposed_list.append({
+                        "proposed": proposed_name,
+                        "exact_match": None,
+                        "candidates": candidates
+                    })
 
         report[category] = proposed_list
 
+    # Compute summary statistics
+    total_checked = sum(len(items) for items in [tables.get("concepts", []), tables.get("variables", [])])
+    total_in_report = sum(len(items) for items in report.values())
+    exact_matches = sum(1 for items in report.values() for item in items if item["exact_match"])
+    needs_review = total_in_report - exact_matches
+
+    report["_summary"] = {
+        "total_checked": total_checked,
+        "exact_matches": exact_matches,
+        "needs_agent_review": needs_review,
+        "no_collision_skipped": total_checked - total_in_report
+    }
     return report
 
 

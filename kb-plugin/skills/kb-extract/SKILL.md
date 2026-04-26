@@ -1,22 +1,19 @@
 ---
 name: kb-extract
-description: Internal helper skill that extracts concepts, theories, variables from converted paper markdown. Called by kb-ingest, not invoked directly by user.
+description: Internal helper skill with extraction guidance for concepts, theories, variables from paper markdown. Wiki creation guidance moved to kb-wiki. Called by kb-ingest, not invoked directly by user.
 ---
 
 # kb-extract - Knowledge Extraction Helper
 
-This skill is called by kb-ingest to extract structured knowledge from converted paper markdown files.
+This skill provides extraction guidance for kb-ingest's Phase 3 subagent. The subagent reads the paper, creates the summary, and drafts wiki pages — kb-extract defines what to extract and how to format it.
 
-## Efficient Workflow
-
-**Token-minimized approach**:
-1. **Orchestrator** creates summary directly (reads paper once)
-2. **kb-verify agent** provides simple YES/NO feedback (separate skill)
-3. **Orchestrator** revises if needed
+## Current Workflow
 
 ```
-Orchestrator (read paper → create summary) → kb-verify (check) → Orchestrator (revision)
+Subagent (read paper → create summary → self-verify → create wiki) → Orchestrator (review & merge)
 ```
+
+The subagent handles all heavy lifting. The orchestrator only does lightweight quality checks and collision resolution.
 
 ## Hypothesis Extraction
 
@@ -53,7 +50,7 @@ Write: "No explicit hypothesis stated in this paper. The paper is a {descriptive
 **Standard causal identification methods**:
 - 2SLS (Two-stage least squares)
 - GMM (Generalized method of moments)
-- DiD (Difference-in-differences) - unless novel design setting
+- DiD (Difference-in-differences) exploiting new regulation/law as exogenous shock
 - Regression Discontinuity - unless novel threshold/cutoff design
 
 **Standard data methods**:
@@ -62,7 +59,7 @@ Write: "No explicit hypothesis stated in this paper. The paper is a {descriptive
 ### CREATE wiki/methods/ page for:
 
 - **Analytical/model papers**: Full model specifications, assumptions, derivations, proofs
-- **Novel identification designs**: Unique research design settings for causality (e.g., novel instrument, novel DiD setting with special threshold)
+- **Novel identification designs**: Unique research design settings for causality (e.g., novel instrument, DiD with non-regulation shock, novel RD threshold)
 - **Novel methodological contributions**: New measurement approaches, new estimators, new tests
 - **Combined approaches**: Novel combinations of standard methods with unique twist
 
@@ -238,62 +235,6 @@ Map paper variable names to wiki names with computational definitions:
 
 Ground Truth findings reference paper names: "InDegree (see Variables table) has β=..." → wiki maps to Peer_Selection_Count
 
-## Wiki Creation (Orchestrator's Job)
+## Related Skills
 
-**Template Path**: Read templates from `templates/*.md` in kb-plugin root. If working from a subdirectory and path fails, use absolute path `kb-plugin/templates/*.md`.
-
-After summary finalized, create wiki pages **following templates exactly**:
-
-### 1. Concepts → wiki/concepts/{concept}.md
-
-Use `templates/concept.md` structure. Fill these sections from paper:
-
-| Template Section | Source in Paper | Required? |
-|------------------|-----------------|-----------|
-| Definition | Introduction, Hypothesis Development, Lit Review | **YES** |
-| Alternative Definitions | Literature Review (how others define it) | If available |
-| Constructs & Variables | Measures/Variables table from summary | **YES** |
-| Related Theories | Theory section mentions | If available |
-| Determinants | What causes variation in concept | If discussed |
-| Economic Consequences | What outcomes concept affects | If discussed |
-| Identification Strategy | How paper identifies/causes concept | If discussed |
-| Future Works | Limitations, future research section | If mentioned |
-
-**Naming**: Use concept name from Concepts Defined table. Link first_used to summary.
-
-### 2. Variables → wiki/variables/{variable}.md
-
-Use `templates/variable.md` structure. Fill these sections:
-
-| Template Section | Source | Required? |
-|------------------|--------|-----------|
-| What It Measures | Variables table: Concept + Definition | **YES** |
-| Computation | Variables table: Computational Definition | **YES** |
-| Data Sources | Methods section | If available |
-| Validity Notes | Results/discussion of variable validity | If discussed |
-| Alternative Variables | Other measures for same concept | If available |
-| Papers Using | Link to summary | **YES** |
-| Interpretations | How variable is interpreted | If discussed |
-
-**Wiki Criteria**: Only for directly measurable variables. Skip PCA, indices, fitted values.
-
-### 3. Methods → wiki/methods/{method}.md
-
-Use `templates/method.md` structure. Only create for novel designs/models.
-
-| Template Section | Source | Required? |
-|------------------|--------|-----------|
-| Description | Methods section overview | **YES** |
-| Steps | Method procedure | **YES** |
-| When To Use | When method is applicable | If discussed |
-| Requirements | Data, tools, assumptions needed | If available |
-| Limitations | What method cannot do | If discussed |
-| Papers Using | Link to summary | **YES** |
-
-**Skip**: Standard methods (OLS, DiD, 2SLS, GMM, etc.)
-
-### 4. Theories → wiki/theories/{theory}.md
-
-Use `templates/theory.md` structure. Fill all sections from paper.
-
-Use templates from templates/ (fallback to kb-plugin/templates/ if path fails). Use Obsidian [[filename]] links.
+- **kb-wiki**: Wiki page creation, updating, filtering, and cross-linking conventions. Use kb-wiki for all wiki page creation/update rules and template mappings.

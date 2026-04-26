@@ -38,7 +38,7 @@ Where top five executives identified from Execucomp database.
 ## Papers Using This Variable
 | Paper | How Used | Key Findings |
 |-------|----------|--------------|
-| [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Validation outcome for MLCs | Direct Peer beta=1.532 (p<0.001) predicts flow |
+| [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Validation outcome for MLCs | Selected Peer beta=2.787*** (z=13.565) predicts flow with relative margin 16.14 (ranked 1st) |
 | Fee & Hadlock [2003] | Mobility and pay studies | Talent flow associated with pay increases |
 | Gao, Luo & Tang [2015] | Labor market effects on pay | Job-hopping affects compensation structure |
 

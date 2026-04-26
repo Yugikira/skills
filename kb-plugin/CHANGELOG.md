@@ -6,6 +6,55 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-04-26] - Workflow Restructuring & Collision Criteria Refinement
+
+### Changed
+
+- **kb-ingest workflow restructured**: Phase 3 and 4 redesigned for token-efficient batch ingest
+  - **Phase 3**: Single subagent handles all paper reading, summary creation, wiki page drafting, Related Papers enrichment, related papers linker, and self-verification (GT↔Claim correspondence) — all flattened, no sub-sub-agents
+  - **Phase 4**: Orchestrator performs lightweight review and post-ingest collision resolution against pre-existing pages
+  - **kb-verify moved to subagent self-check** (STEP 2.5): Subagent re-verifies GT↔Claim correspondence before wiki creation — paper already in context, no re-read cost
+- **kb-extract split**: Wiki creation content moved to new kb-wiki skill
+  - kb-extract now focuses solely on extraction guidance (hypothesis, methods, concepts, variables)
+  - kb-wiki contains all wiki page creation rules, template mappings, filtering criteria, and naming conventions
+- **Collision criteria tightened**: Replaced `>70% keyword overlap → update_existing` with **semantic comparison**
+  - Orchestrator reads existing wiki page definitions and compares at phenomenon level
+  - Handles subset/superset relationships explicitly
+  - Keyword overlap now only signals *which* pages to check, not the decision
+
+### Added
+
+- **skills/kb-wiki/SKILL.md**: New internal helper skill for wiki page creation and updating
+  - Template mappings for all page types (concepts, variables, methods, theories, constructs)
+  - Methods and variables filtering criteria (create vs skip)
+  - Variable naming conventions
+  - Analytical model construct handling
+  - Cross-linking conventions
+- **Case C Step 0**: Well-organized paper shortcut — if PDF folder in `raw/data/` contains `.bib` file, move directly to `raw/papers/` and skip extraction
+- **Batch citekey support**: `/kb-ingest {citekey1} {citekey2} ...` for processing multiple papers
+
+- **DiD novelty criteria clarified**: DiD exploiting new regulations/laws is standard (skip); DiD with non-regulation shocks may be novel (create)
+- **kb-extract Efficient Workflow updated**: Replaced outdated orchestrator→kb-verify→revision diagram with current subagent→orchestrator flow
+- **Scripts/check_wiki_collision.py**: Now filters output to only include entries needing attention. Added `_summary` key with counts.
+
+### Added
+
+- **Scripts/check_new_page_collision.py**: New post-ingest collision detection script
+  - Checks newly created pages against pre-existing entries only (excludes the new pages themselves)
+  - Accepts JSON input listing new pages by category
+  - Reads wiki page definitions for keyword comparison
+  - Used by Phase 4.3 orchestrator for post-ingestion merge detection
+
+### Updated Files
+
+- `skills/kb-ingest/SKILL.md` - Case C Step 0, restructured Phase 3+4, batch citekey support, subagent self-verification, Related Papers enrichment, post-ingest collision script
+- `skills/kb-extract/SKILL.md` - Removed wiki creation section, updated workflow description, DiD criteria
+- `skills/kb-wiki/SKILL.md` - New wiki creation and update guidance, DiD criteria
+- `Scripts/check_wiki_collision.py` - Filtered output, _summary statistics
+- `Scripts/check_new_page_collision.py` - New post-ingest collision detection
+
+---
+
 ## [2026-04-24] - Windows Encoding and Template Path Fixes
 
 ### Fixed

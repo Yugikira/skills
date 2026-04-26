@@ -40,10 +40,10 @@ Two primary operationalizations at different scope levels:
 ## Economic Consequences of Outside Opportunities
 | Consequence | Mechanism | Key Paper | Finding |
 |-------------|-----------|-----------|---------|
-| Total compensation | Higher reservation wage increases pay | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | InDegree beta=0.061 (p<0.001) on Ln(Total Pay) |
-| Equity pay share | Retention motive increases equity weight | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | PCOMP1 increases Equity Pct by 3.2 pp |
-| Pay for luck | Firms pay for luck to retain executives | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Luck x PCOMP1 beta=0.145 (p<0.01) |
-| RPE usage | Less RPE when outside options matter | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Competition reduces RPE sensitivity 45.6% |
+| Total compensation | Higher reservation wage increases pay | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | InDegree beta=0.105*** (t=7.363) on Ln(Total Pay); PCOMP1 beta=0.069*** |
+| Equity pay share | Retention motive increases equity weight | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | PCOMP1 increases Ln(Equity Pay) by 15.1% (p<0.01) |
+| Pay for luck | Firms pay for luck to retain executives | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Luck x PCOMP1 beta=0.088*** (t=2.624) |
+| RPE usage | Less RPE when outside options matter | [[source/summary/gao_2026_aggregated_compensation_peer_summary]] | Competition reduces RPE sensitivity by 45.6% |
 
 ## Identification Strategy
 | Strategy | Assumption | Key Paper | Note |
