@@ -72,12 +72,7 @@ export PADDLE_OCR_ASYNC_URL=https://paddleocr.aistudio-app.com/api/v2/ocr/jobs
 ### 2. Verify Environment
 
 ```bash
-uv run paddle-pdf --version
-```
-
-If not installed:
-```bash
-uv sync --all-extras
+paddle-pdf --version
 ```
 
 ## Core Workflow
