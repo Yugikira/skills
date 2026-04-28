@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "paddle-pdf-plugin",
+  "description": "PaddleOCR PDF conversion skill for converting PDFs to Markdown",
+  "owner": {
+    "name": "Yugi"
+  },
+  "plugins": [
+    {
+      "name": "paddle-pdf-plugin",
+      "description": "Convert PDF files to Markdown using PaddleOCR API with batch processing, resume support, and large file handling",
+      "version": "1.0.0",
+      "author": {
+        "name": "Yugi"
+      },
+      "source": "./",
+      "category": "development",
+      "keywords": ["pdf", "ocr", "markdown", "paddleocr", "conversion", "batch"]
+    }
+  ]
+}

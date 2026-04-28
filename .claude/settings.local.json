@@ -26,28 +26,28 @@
     ]
   },
   "extraKnownMarketplaces": {
-    "kb-marketplace": {
+    "kb-plugin": {
       "source": {
         "source": "directory",
-        "path": "./kb-plugin"
+        "path": "D:/claude/skills/kb-plugin"
       }
     },
-    "libby-marketplace": {
+    "libby-plugin": {
       "source": {
         "source": "directory",
-        "path": "./libby-plugin"
+        "path": "D:/claude/skills/libby-plugin"
       }
     },
-    "paddle-pdf-marketplace": {
+    "paddle-pdf-plugin": {
       "source": {
         "source": "directory",
-        "path": "./paddle-pdf-plugin"
+        "path": "D:/claude/skills/paddle-pdf-plugin"
       }
     }
   },
   "enabledPlugins": {
-    "kb-plugin@kb-marketplace": true,
-    "libby-plugin@libby-marketplace": true,
-    "paddle-pdf-plugin@paddle-pdf-marketplace": true
+    "kb-plugin@kb-plugin": true,
+    "libby-plugin@libby-plugin": true,
+    "paddle-pdf-plugin@paddle-pdf-plugin": true
   }
 }

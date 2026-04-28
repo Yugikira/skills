@@ -2,7 +2,6 @@
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "libby-plugin",
   "description": "Libby skills for citation extraction, paper fetching, and web search",
-  "version": "1.0.0",
   "owner": {
     "name": "Yugi"
   },
@@ -16,12 +15,7 @@
       },
       "source": "./",
       "category": "development",
-      "keywords": ["libby", "citations", "papers", "research", "web-search"],
-      "skills": [
-        "./skills/libby-extract",
-        "./skills/libby-fetch",
-        "./skills/libby-websearch"
-      ]
+      "keywords": ["libby", "citations", "papers", "research", "web-search"]
     }
   ]
 }
