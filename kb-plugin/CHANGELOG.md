@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2026-05-11] - Summary Agent Delegation & Semantic Duplicate Check
+
+### Changed
+
+- **kb-ingest refactored**: Extraction agent instructions moved to dedicated agent file
+  - Inline 4-step instructions replaced with delegation to `skills/kb-ingest/agents/summary-agent.md`
+  - Step count corrected from 7 to 6 (semantic check is in kb-wiki, not separate step)
+  - Plugin encapsulation: agent file now inside plugin, not `.claude/agent/`
+
+### Added
+
+- **skills/kb-ingest/agents/summary-agent.md**: Centralized extraction agent instructions
+  - 6-step workflow: Read → Summary → Self-verify → Linker → Wiki → Output
+  - Explicit semantic check reminder in Step 5 (points to kb-wiki)
+- **Pre-Creation Semantic Check** in kb-wiki (~100 lines)
+  - Step 1: Search existing pages before creation
+  - Step 2: Category-specific merge rules (concepts, variables, methods, constructs, theories)
+  - Step 3: Definition comparison at phenomenon/mechanism level
+  - Cross-category checks: prevents variable/concept confusion, method/construct overlap
+
+### Updated Files
+
+- `skills/kb-ingest/SKILL.md` - Delegation pattern, corrected path and step count
+- `skills/kb-wiki/SKILL.md` - Pre-Creation Semantic Check section
+- `skills/kb-ingest/agents/summary-agent.md` - New file (extracted from inline instructions)
+
+---
+
 ## [2026-04-26] - Workflow Restructuring & Collision Criteria Refinement
 
 ### Changed

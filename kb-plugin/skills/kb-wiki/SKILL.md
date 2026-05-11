@@ -137,6 +137,107 @@ For analytical models:
 3. Include measurement type if helpful (Count, Rate, Indicator, Ratio)
 4. If no wiki page: Wiki Name = "[derived]" or "[composite]"
 
+## Pre-Creation Semantic Check
+
+**CRITICAL**: Before creating ANY new wiki page, you MUST check for semantic duplicates across ALL categories: concepts, variables, methods, constructs, theories.
+
+### Step 1: Search Existing Pages
+
+For each page you plan to create:
+1. Run `Glob wiki/{category}/*.md` to list existing pages in that category
+2. Read the `_index.md` for the category to see existing entries
+3. **Read definitions** of pages with similar names (not just matching names)
+4. Cross-check related categories (e.g., variables may duplicate concepts, methods may duplicate constructs)
+
+### Step 2: Category-Specific Semantic Rules
+
+#### Concepts (wiki/concepts/)
+
+**MERGE INTO EXISTING if:**
+
+| Relationship Type | Example | Action |
+|-------------------|---------|--------|
+| **Mathematical reciprocal/transform** | Market-to-Book vs Book-to-Market | ONE page; note formula variants |
+| **Specific case of general** | Announcement_Abnormal_Return ⊂ Cumulative_Abnormal_Returns | ONE page for general; note specific variant |
+| **Prefix/suffix variation** | "Reporting_Conservatism" vs "Conservatism" | Merge into base if same phenomenon |
+| **Synonym definitions** | "Earnings Informativeness" vs "ERC" (if same phenomenon) | Merge with alternative names section |
+| **Same phenomenon, different wording** | Basu's conservatism vs Givoly-Hayn's conservatism | ONE page with alternative definitions table |
+
+**KEEP SEPARATE if:**
+- Different underlying phenomenon (e.g., Timeliness vs Asymmetric_Timeliness)
+- One is cause, other is consequence (e.g., Conservatism → Asymmetric_Persistence)
+
+#### Variables (wiki/variables/)
+
+**MERGE INTO EXISTING if:**
+
+| Relationship Type | Example | Action |
+|-------------------|---------|--------|
+| **Mathematical reciprocal** | Market/Book (M/B) vs Book/Market (B/M) | ONE page; note M/B = 1/B/M |
+| **Log transformation** | ln(MarketCap) vs MarketCap | ONE page; note log variant in computation |
+| **Same computation, different name** | "Annual_Return" vs "Stock_Return" (same formula) | ONE page with alternative names |
+| **Same variable, different window** | 3-day CAR vs 5-day CAR vs announcement CAR | ONE page; note window variants |
+
+**KEEP SEPARATE if:**
+- Different formulas for purportedly same concept (cross-link but separate)
+- Different data sources yield different measures (note distinction)
+
+#### Methods (wiki/methods/)
+
+**MERGE INTO EXISTING if:**
+
+| Relationship Type | Example | Action |
+|-------------------|---------|--------|
+| **Same core procedure, different label** | "Basu Regression" vs "Asymmetric Timeliness Model" (same equation) | ONE page; note alternative names |
+| **Minor variation of existing method** | Basu (1997) vs modified Basu with controls | ONE page; note variations in Model Variations table |
+| **Same analytical model, different paper** | Multiple papers using same Kyle (1985) model | ONE method page; note each paper in Model Variations |
+
+**KEEP SEPARATE if:**
+- genuinely novel design (new identification strategy, new estimator)
+- Different model structure (different equations, assumptions)
+
+#### Constructs (wiki/constructs/)
+
+**MERGE INTO EXISTING if:**
+
+| Relationship Type | Example | Action |
+|-------------------|---------|--------|
+| **Same model parameter** | λ (informed trading intensity) across papers using same model | ONE page; note papers in "Papers Using" |
+| **Same definitional construct** | "Informed Traders" across Kyle-model papers | ONE page; add each paper's context |
+| **Same symbol, same role** | σ² (variance parameter) in same model family | ONE page |
+
+**KEEP SEPARATE if:**
+- Same symbol but different meaning in different models (cross-link with disambiguation)
+- Different construct in different theoretical framework
+
+#### Theories (wiki/theories/)
+
+**MERGE INTO EXISTING if:**
+
+| Relationship Type | Example | Action |
+|-------------------|---------|--------|
+| **Same theoretical framework** | "Contracting Theory" vs "Contract Theory" | ONE page; note alternative names |
+| **Same core proposition** | Multiple papers deriving same proposition | ONE page; note papers |
+
+**KEEP SEPARATE if:**
+- Different theoretical frameworks (e.g., Agency Theory vs Signaling Theory)
+- Competing explanations for same phenomenon
+
+### Step 3: Definition Comparison
+
+Compare definitions at the **phenomenon/mechanism level**:
+- **Same underlying phenomenon/mechanism?** → Merge
+- **Different phenomenon despite keyword overlap?** → Keep separate with cross-link
+- **One is subset of the other?** → ONE page (general notes specific variants)
+
+### Cross-Category Checks
+
+Before creating a page in one category, check if it belongs in another:
+- **Variable that's actually a concept?** → concepts/ not variables/
+- **Method that's standard?** → SKIP (no wiki page)
+- **Construct from empirical paper?** → May be concept/ not constructs/
+- **Theory from single paper?** → May be concept/ not theories/
+
 ## Cross-Linking Conventions
 
 - All wiki pages use Obsidian [[filename]] links

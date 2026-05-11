@@ -97,54 +97,25 @@ Dispatch a SINGLE subagent. **CRITICAL**: This agent must complete ALL work itse
 ```
 Agent prompt for extraction subagent:
 ---
-You are extracting knowledge from an academic paper and creating wiki pages for the Knowledge Base.
+Follow the Summary Agent instructions in `kb-plugin/skills/kb-ingest/agents/summary-agent.md` to extract this paper.
 
-Input files:
-- Paper markdown: raw/papers/{citekey}/{citekey}.md
+INPUT:
+- citekey: {citekey}
+- Paper: raw/papers/{citekey}/{citekey}.md
+- Metadata: Read from raw/papers/{citekey}/{citekey}.bib
 - Summary template: kb-plugin/templates/paper_summary.md
 - Extraction guidance: kb-extract skill (what to extract, how to format)
-- Wiki creation guidance: kb-wiki skill (how to create wiki pages, what to skip)
+- Wiki creation guidance: kb-wiki skill (how to create wiki pages, semantic duplicate check, what to skip)
 
-YOUR JOB (complete all steps yourself -- DO NOT dispatch sub-agents or invoke other skills):
+Execute all 6 steps from the Summary Agent:
+1. Read paper
+2. Create summary at source/summary/{citekey}_summary.md
+3. Self-verify GT ↔ Claim correspondence
+4. Run related papers linker
+5. Create wiki pages (follows kb-wiki: includes semantic duplicate check before creation)
+6. Return output report
 
-STEP 1: READ the paper
-- Read Introduction, Hypothesis Development, Literature Review, Results/Discussion, Variable Definitions, **Reference/References section**
-
-STEP 2: CREATE summary at source/summary/{citekey}_summary.md
-Follow kb-extract guidance and paper_summary.md template:
-- 3-5 Claimed findings (authors' interpretations)
-- 3-5 Ground Truth findings (empirical support, with correspondence to claims)
-- Hypothesis section with argument structure analysis
-- Concepts Defined table (abstract definitions + construct links)
-- Measures/Variables table (Paper Variable → Wiki Name mapping + computational definitions)
-- Methods section (note standard vs novel for wiki decision)
-- **Related Papers table**: For each cited paper, extract full details (authors, year, title, journal) from the References section. Do NOT leave citations as bare citekeys.
-
-STEP 2.5: SELF-VERIFY Ground Truth ↔ Claim correspondence
-Before creating wiki pages, re-check each Ground Truth finding:
-- Does GT Finding N actually support Claimed Finding N?
-- Are the GT findings reproducible? (variable names match paper, formulas are exact, coefficients and p-values are correct)
-- If any check fails: re-read the relevant paper section and fix the summary now
-- This is a self-check — the paper is already in your context, no re-reading cost
-
-STEP 3: RUN related papers linker
-```bash
-python Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update || \
-python kb-plugin/Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update
-```
-
-STEP 4: CREATE wiki pages
-Follow kb-wiki skill guidance:
-- Use templates from templates/ (fallback kb-plugin/templates/)
-- Concepts → wiki/concepts/{concept}.md (for concepts in Concepts Defined table)
-- Variables → wiki/variables/{variable}.md (ONLY for directly measurable variables; skip derived/PCA/composite)
-- Constructs → wiki/constructs/{construct}.md (for analytical model parameters)
-- Methods → wiki/methods/{method}.md (ONLY for novel designs/models; skip standard methods)
-- Theories → wiki/theories/{theory}.md (if paper contributes a theory)
-- Use Obsidian [[filename]] linking
-- Include first_used/first_defined linking back to summary
-
-OUTPUT: Return the summary path and list of created wiki pages by category.
+OUTPUT: Return summary path and list of wiki pages created/updated/skipped by category.
 ---
 ```
 
