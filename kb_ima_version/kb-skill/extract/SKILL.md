@@ -7,119 +7,200 @@ description: Internal helper skill with extraction guidance for concepts, theori
 
 This skill provides extraction guidance for kb-ingest's Phase 3 subagent. The subagent reads the paper, creates the summary, and drafts wiki pages — kb-extract defines what to extract and how to format it.
 
+## Paper Type Detection
+
+Select template based on paper type:
+
+| Paper Type | Criteria | Template | Detailed Guidance |
+|------------|----------|----------|-------------------|
+| **Archival** | Existing data sources, observational | `templates/paper_summary_archival.md` | `references/archival_extract_guidance.md` |
+| **Experimental** | Manipulated variables, treatment/control, subjects | `templates/paper_summary_experimental.md` | See Experimental Papers section |
+| **Analytical** | No empirical data, mathematical model, proofs | `templates/paper_summary_analytical.md` | See Analytical Model Papers section |
+| **Survey** | Questionnaires, interviews, opinions/judgments/knowledge | `templates/paper_summary_survey.md` | `references/survey_extract_guidance.md` |
+| **Review** | Literature survey on specific concept, synthesizes findings | Minimal summary (wiki consolidation) | `references/review_extract_guidance.md` |
+
 ## Current Workflow
 
+**Standard workflow** (archival, experimental, analytical, survey):
 ```
 Subagent (read paper → create summary → self-verify → create wiki) → Orchestrator (review & merge)
 ```
 
+**Review workflow** (different):
+```
+Subagent (check concept wiki → create/update concept wiki → minimal summary) → Orchestrator (quality check)
+```
+
 The subagent handles all heavy lifting. The orchestrator only does lightweight quality checks and collision resolution.
 
-## Hypothesis Extraction
+## Wiki Creation Trigger
 
-### Where to Find Hypotheses
-- **Hypothesis Development section**: Explicit H1, H2 statements
-- **Introduction**: Research questions that imply hypotheses
-- **Theory section**: Propositions derived from theory
+**CRITICAL**: After completing the summary, you MUST create wiki pages for all entries with Wiki Page links.
 
-### If No Explicit Hypothesis
-Write: "No explicit hypothesis stated in this paper. The paper is a {descriptive paper type: empirical exploration | descriptive analysis | methodological contribution}."
+### Trigger Tables
 
-### Argument Structure Analysis
-1. **Identify premises** (supporting evidence/claims for the hypothesis)
-2. **Classify each premise source**:
-   - Literature-based (prior findings)
-   - Theory-based (logical derivation)
-   - Assumption-based (taken as given)
-   - Data-based (empirical observation)
-3. **Determine reasoning approach**:
-   - **Deductive**: Conclusion necessarily follows (mathematical/logical certainty)
-   - **Inductive**: Conclusion probabilistically follows (empirical generalization)
-4. **Evaluate**:
-   - Deductive papers: **Sound** if valid AND all premises empirically true; **Unsound** otherwise
-   - Inductive papers: **Cogent** if strong AND all premises empirically true; **Uncogent** otherwise
+Check each summary table for Wiki Page column:
 
-## Methods Filtering Criteria
+| Table | Wiki Page Column | Action |
+|-------|-------------------|--------|
+| Concepts Defined | `[[concepts/{name}]]` | Create if page doesn't exist |
+| Measures/Variables | `[[variables/{name}]]` or `[no wiki]` | Create for `[[variables/{name}]]` entries |
+| Ground Theories (experimental) | `[[theories/{name}]]` | Create if page doesn't exist |
+| Model Parameters & Constructs (analytical) | `[[constructs/{name}]]` | Create if page doesn't exist |
 
-### SKIP - Do NOT create wiki/methods/ page for:
+### Survey-Specific Wiki Naming
 
-**Standard econometric methods**:
-- OLS, Fixed Effects, Random Effects
-- Standard tests: t-tests, F-tests, Hausman tests, White tests
+Survey wiki naming differs from other types:
 
-**Standard causal identification methods**:
-- 2SLS (Two-stage least squares)
-- GMM (Generalized method of moments)
-- DiD (Difference-in-differences) exploiting new regulation/law as exogenous shock
-- Regression Discontinuity - unless novel threshold/cutoff design
+| Category | Naming | Marker |
+|----------|--------|--------|
+| Concepts | Standard `[[concepts/{concept}]]` | NO `_survey` |
+| Variables (grouped) | `[[variables/{dimension}_survey]]` | YES `_survey` |
+| Methods (instruments) | `[[methods/{instrument}_survey_instrument]]` | YES `_survey_instrument` |
 
-**Standard data methods**:
-- Panel data construction, variable winsorization
+**Key**: Variables = questions grouped by dimension (one page per dimension, NOT per question).
 
-### CREATE wiki/methods/ page for:
+## Ground Truth Format by Paper Type
 
-- **Analytical/model papers**: Full model specifications, assumptions, derivations, proofs
-- **Novel identification designs**: Unique research design settings for causality (e.g., novel instrument, DiD with non-regulation shock, novel RD threshold)
-- **Novel methodological contributions**: New measurement approaches, new estimators, new tests
-- **Combined approaches**: Novel combinations of standard methods with unique twist
+All paper types have Ground Truth Findings (most objective results), but **format differs by type**:
 
-### Methods Section in Summary
+| Paper Type | Ground Truth Format | Example |
+|------------|--------------------|---------|
+| **Archival** | Regression coefficient: `Variable X (defined as [formula]) has β=YY (p<ZZ) in [model] (n=XXXX)` | `ROA (defined as net income/assets) has β=0.15 (p<0.01) in OLS (n=500)` |
+| **Experimental** | Manipulated/dependent relationship: `With subjects from {background}, {X} is {relation} to {Y} (p=ZZ, n=XXXX)` | `With MBA students, manipulated incentive is positively related to effort (p<0.05, n=120)` |
+| **Survey** | Question results: `Question {Q1-Q3} (grouped as {dimension}) shows {result}` | `Question Q1-Q3 (Budget Setting) shows 65% report moderate participation` |
+| **Analytical** | Theorem/Proposition: `**Theorem N** - {statement with conditions}` | `**Theorem 5** - If σ_x² = 0, equilibrium does not exist if e^ac < √(1+n)` |
+| **Review** | NO Ground Truth (consolidates existing findings) | — |
 
-**If using standard methods only**:
-```markdown
-## Methods
-- **Standard Methods**: OLS with Industry×Year fixed effects (no wiki page created)
-- **Data**: {data sources}, n={sample size}
-```
+**Detailed format guidance**: See type-specific reference files.
 
-**If novel design/model**:
-```markdown
-## Methods
-- **Novel Design**: {description of what makes it novel}
-- **Model**: {key equations or framework}
-→ Create wiki/methods/{method_name}.md
-```
+### Methods Creation Trigger
 
-## Analytical Model Papers
+If summary Methods section contains:
+- `→ Create wiki/methods/{method_name}` — Create wiki/methods/{method_name}.md
+- "no wiki page created" — SKIP
 
-### Recognition Criteria
+### Wiki Creation Process
+
+For each Wiki Page link `[[category/name]]` in tables:
+
+1. **Semantic duplicate check**: Follow `kb-wiki` Pre-Creation Semantic Check
+2. **If duplicate found**: Update existing page instead of creating new
+3. **If no duplicate**: Create new page using `kb-wiki/templates/{category}.md`
+4. **Fill template**: Use information from summary table row
+
+**DO NOT skip wiki page creation** — this is essential for knowledge base structure.
+
+## Paper-Type-Specific Guidance
+
+### Archival Papers
+
+For detailed archival extraction guidance (hypothesis argument structure, methods filtering, ground truth format), see:
+
+→ **`references/archival_extract_guidance.md`**
+
+Key archival-specific topics covered:
+- Hypothesis extraction with argument structure analysis
+- Methods filtering for econometric methods
+- Claim-Ground Truth correspondence rules
+- Regression coefficient format
+
+### Survey Papers
+
+For detailed survey extraction guidance (question grouping, survey design, wiki naming), see:
+
+→ **`references/survey_extract_guidance.md`**
+
+Key survey-specific topics covered:
+- Ground truth format for question-based results
+- Concepts extraction (easier than archival)
+- Variables = survey questions (grouped by dimensions)
+- Survey Design extraction (instrument, reliability, non-response)
+- Face-to-face interview specifics
+- Wiki naming with `_survey` marker
+
+### Analytical Model Papers
+
 Paper is an analytical model if:
 - No empirical data or sample description
 - Contains formal mathematical model with equations
 - Results are proofs/theorems, NOT coefficient estimates
 - "Variables" are model parameters (symbols like λ, σ²), not observable measures
 
-### Extraction Rules for Analytical Models
+**Extraction Rules for Analytical Models**:
 
 1. **SKIP wiki/variables/** - Model parameters are theoretical constructs, NOT observable
-2. **CREATE wiki/constructs/{construct}.md** for theoretical constructs:
+2. **CREATE wiki/constructs/{construct}.md** for:
    - Model parameters (λ, σ_ε², a, c, etc.)
    - Definitional constructs (Informed Traders, Price Informativeness, etc.)
-   - Use templates/construct.md
-3. **CREATE wiki/methods/{model}.md** using templates/method_analytical.md
-4. **Ground Truth Findings**: Use Theorem/Proposition format (NOT coefficient format)
+3. **CREATE wiki/methods/{model}.md** using kb-wiki/templates/method_analytical.md
+4. **Ground Truth Findings**: Use Theorem/Proposition format
    ```
    Finding 1: **Theorem 5** - If σ_x² = 0 (no noise), equilibrium does not exist if e^ac < √(1+n).
    ```
-5. **Model Variations**: Extract comparative statics into Model Variations table
-   - From paper: parameter changes and their effects
-   - Future updates: when other papers adopt model with variations
+5. **Model Variations Table**: Extract comparative statics
 
-### Model Variations Section
-The Model Variations table in method_analytical.md should include:
-| Paper | Variation | Key Insight Changed |
-|-------|-----------|---------------------|
-| [[source/summary/{citekey}]] | {original setting - baseline} | {main result} |
-| [[source/summary/{citekey2}]] | {changed assumption/setup} | {how result differs} |
+### Experimental Papers
 
-Update this table when future papers adopt the model with variations in key assumptions.
+Experimental papers differ from archival in structure:
+- **Methods section**: Focus on experimental design, not econometric methods
+- **Ground Truth format**: Manipulated/dependent variable relationship
+- **Ground Theories**: Link to existing theories (experimental papers test pre-existing theories)
+
+**Hypothesis in Experimental Papers**:
+- Experimental papers CAN develop hypotheses (predicting manipulation effect)
+- If hypothesis exists, use archival guidance argument structure analysis
+- See template `paper_summary_experimental.md` for experimental-specific sections:
+  - Ground Theories (link to existing theories)
+  - Experimental Design (design type, control group, randomisation, counterbalancing)
+  - The Context (external validity factors)
+
+### Review Papers
+
+Review papers have a **different workflow**—they consolidate wiki pages, not extract full summaries.
+
+→ **`references/review_extract_guidance.md`**
+
+Key review workflow:
+1. Check if concept wiki page exists
+2. Create concept page if not exists
+3. Update existing concept page if exists
+4. Create minimal summary (not full template)
+5. Only create page for main concept
+
+**Review papers do NOT use full summary template.**
+
+## Hypothesis Extraction (Multiple Paper Types)
+
+**Papers that CAN develop hypotheses**:
+- **Archival**: Most common—theoretical arguments with empirical testing
+- **Survey**: Theory-driven causal predictions (Brown 1995: need good theory)
+- **Experimental**: Predicting manipulation effect on dependent variable
+- **Analytical**: Propositions derived from model assumptions
+
+**Papers that typically DO NOT develop hypotheses**:
+- **Review**: Consolidates existing hypotheses
+- **Descriptive surveys**: No causal predictions
+
+### Argument Structure Analysis
+
+For all papers with hypotheses (archival, survey, experimental), use the argument structure analysis from:
+
+→ **`references/archival_extract_guidance.md`** → "Hypothesis Extraction" section
+
+This includes:
+- Premise identification and classification
+- Deductive vs Inductive reasoning approach
+- Sound/Unsound/Cogent/Uncogent evaluation
 
 ## Where to Find Concepts
 
-**Key sections for concept definitions**:
+**Key sections for concept definitions** (applies to all paper types):
 1. **Introduction** - Authors introduce concepts and their importance
 2. **Hypothesis Development** - Explicit concept definitions for hypothesis testing
 3. **Literature Review** - Background definitions from prior work
+
+**Survey papers**: Concepts easier to extract—from research question, title, introduction.
 
 **If no explicit definition found**:
 - Provide a **common-sense definition** based on context
@@ -141,62 +222,7 @@ Update this table when future papers adopt the model with variations in key assu
 - Constructs: Industry match, Compensation peer group match (measure if two managers are in same classification)
 - Proxies: `SameIndustry` = 1 if both firms in same SIC code, `PeerGroupMatch` = 1 if both in compensation peer group
 
-## Summary Requirements
-
-### Claimed Findings: 3-5 Key Interpretations FIRST
-
-Select the authors' **main theoretical claims**:
-- What they conclude from the empirical results
-- The story they tell about why results matter
-
-**Write Claims BEFORE Ground Truth** - this establishes the interpretive framework first.
-
-### Ground Truth Findings: 3-5 Key Findings SECOND
-
-Select the **most important** empirical results:
-- Main coefficients from primary regression tables
-- Key novel variables/measures from the paper
-- Statistically significant results (p<0.05 or better)
-
-**Correspondence Requirement**: The first N Ground Truth findings should directly support the N Claimed findings above. Finding 1 supports Claim 1, Finding 2 supports Claim 2, etc.
-
-DO NOT extract every finding. Quality over quantity.
-
-### Ground Truth Format
-
-Each finding must be **reproducible** - use the paper's actual variable names:
-
-```
-{Paper Variable Name} (defined as [exact formula from paper]) has coefficient β=YYY (p<ZZ) in [model type] (n=XXXX).
-```
-
-**Key rules**:
-- Use **paper's exact variable names** (e.g., "PCOMP1", "InDegree") - be honest to the paper
-- Include computational definition from paper (Results section, Variable Definitions)
-- If a variable is defined once, subsequent findings can reference "see Finding N" or "see Variables table"
-- The Variables table maps paper names to common-sense wiki names
-
-## Measures/Variables Filtering Criteria
-
-### Wiki Page Criteria
-
-**CREATE wiki/variables/ page for** (directly measurable/basic):
-- **BE FOCUS**: Focus on variables central to the paper.
-- **Raw counts**: Number of items (e.g., peer selections, employees, transactions)
-- **Indicators**: Binary variables (0/1 flags for observable events)
-- **Ratios from raw data**: Computable from observable inputs (e.g., proportions, percentages)
-- **Network statistics**: Directly computed from network structure (e.g., degree, clustering coefficient)
-- **Observable measurements**: Variables that can be directly counted/measured
-
-**SKIP - NO wiki page for** (derived/composite):
-- **PCA components**: Principal components (e.g., PCOMP1, PCOMP2) - these are constructed indices
-- **Constructed indices**: Variables combining multiple measures through mathematical transformation
-- **Standardized variables**: Z-scores, normalized versions of other variables
-- **Fitted/predicted values**: Outputs from regression models (e.g., "Fitted Pay")
-- **Generic names**: Variables with non-descriptive names that could apply to any paper
-- **Control Variables**: **DO NOT** create wiki page for control variables not essential to the paper.
-
-### Variable Naming Guidelines
+## Variable Naming Guidelines
 
 **Paper Variable** = exact name from paper (use in Ground Truth findings)
 **Wiki Name** = common-sense descriptive name (use in wiki page title)
@@ -206,8 +232,6 @@ Each finding must be **reproducible** - use the paper's actual variable names:
 | InDegree | Peer_Selection_Count | YES | Describes what it counts |
 | PCOMP1 | [derived] | NO | PCA component, not directly measurable |
 | Talent_Flow | Executive_Move | YES | Describes the observable event |
-| Eigenvector | Network_Centrality | YES | More descriptive of what it captures |
-| Clustering | Peer_Clustering_Rate | YES | Describes the ratio |
 
 **Wiki naming rules**:
 1. Wiki Name should describe what the variable **directly measures**
@@ -215,25 +239,9 @@ Each finding must be **reproducible** - use the paper's actual variable names:
 3. Include measurement type if helpful (Count, Rate, Indicator, Ratio)
 4. If no wiki page: Wiki Name = "[derived]" or "[composite]"
 
-### Measures/Variables Table
-
-Map paper variable names to wiki names with computational definitions:
-
-| Paper Variable | Wiki Name | Constructs | Concept | Computational Definition | Wiki Page |
-|----------------|-----------|------------|---------|--------------------------|-----------|
-| InDegree | Peer_Selection_Count | Network position | Outside Opportunities | Number of firms selecting focal firm as peer | [[variables/Peer_Selection_Count]] |
-| PCOMP1 | [derived] | Talent Transferability | Competition | First principal component of 5 measures | [no wiki] |
-
-**Columns explained**:
-- **Paper Variable**: Exact name used in the paper (honest to source) - use this in Ground Truth findings
-- **Wiki Name**: Common-sense descriptive name (if wiki page created) or "[derived]" if no wiki
-- **Wiki Page**: Link if directly measurable, "[no wiki]" if composite/constructed
-
-**Rules**:
-- Computational Definition must be **exact formula or operational rule**
-- Ground Truth findings use **Paper Variable** names; wiki pages use **Wiki Name**
-
-Ground Truth findings reference paper names: "InDegree (see Variables table) has β=..." → wiki maps to Peer_Selection_Count
+**Variable wiki page criteria** (applies to archival, experimental, survey):
+- CREATE for: raw counts, indicators, ratios from raw data, observable measurements
+- SKIP for: PCA components, constructed indices, standardized variables, fitted values, control variables
 
 ## Related Skills
 
@@ -241,4 +249,17 @@ Ground Truth findings reference paper names: "InDegree (see Variables table) has
 
 ## Templates
 
-- `templates/paper_summary.md` - Paper summary template structure
+Four paper summary templates based on paper type:
+
+- `templates/paper_summary_archival.md` - Archival/empirical papers
+- `templates/paper_summary_experimental.md` - Experimental papers
+- `templates/paper_summary_analytical.md` - Analytical model papers
+- `templates/paper_summary_survey.md` - Survey papers
+
+**Review papers**: No full template—use minimal summary format per review guidance.
+
+## References
+
+- `references/archival_extract_guidance.md` - Archival paper detailed guidance
+- `references/survey_extract_guidance.md` - Survey paper detailed guidance
+- `references/review_extract_guidance.md` - Review paper wiki consolidation workflow

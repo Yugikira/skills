@@ -1,5 +1,5 @@
 ---
-title: {Paper Title}
+title: "{Paper Title}"
 doi: {doi}
 citekey: {citekey}
 authors: [{Author 1}, {Author 2}, ...]
@@ -7,7 +7,8 @@ year: {YYYY}
 journal: {Journal Name}
 keywords: [{keyword1}, {keyword2}, ...]
 processed: {YYYY-MM-DD}
-source: [[raw/papers/{citekey}/{citekey}.pdf]]
+source: [[raw/papers/{citekey}/{citekey}.pdf}]
+paper_type: archival
 ---
 
 # {Paper Title}
@@ -67,15 +68,6 @@ source: [[raw/papers/{citekey}/{citekey}.pdf]]
 |----------------|-----------|------------|---------|--------------------------|-----------|
 | {paper_name} | {wiki_name} | {construct} | {concept} | {exact formula} | [[variables/{wiki_name}]] or [no wiki] |
 
-## Model Parameters & Constructs (Analytical Models Only)
-> **For analytical/model papers**: These are theoretical constructs.
-> Create wiki/constructs/ pages for these. NO wiki/variables/ pages.
-
-| Construct | Symbol | Type | Definition | Wiki Page |
-|-----------|--------|------|------------|-----------|
-| {name} | λ | model_parameter | {definition} | [[constructs/{name}]] |
-| {name} | - | definitional_construct | {definition} | [[constructs/{name}]] |
-
 ## Hypothesis
 > If no explicit hypothesis: write "No explicit hypothesis stated in this paper."
 >
@@ -86,6 +78,7 @@ source: [[raw/papers/{citekey}/{citekey}.pdf]]
 
 ### Argument Structure
 > Premises intended to support the hypothesis.
+> For detailed premise classification and reasoning analysis, refer to `kb-extract/references/archival_extract_guidance.md`.
 
 | Premise | Source | Type |
 |---------|--------|------|

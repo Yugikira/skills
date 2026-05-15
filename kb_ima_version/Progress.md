@@ -124,14 +124,184 @@ Existing file → Move to Archived KB → Upload new file → User cleans Archiv
 
 ## Task 3: Expanding domain scope
 
-- **Status**: Paused (waiting for user to return)
-- **Blocked By**: None
+- **Status**: In Progress
+- **Started**: 2026-05-15
 
-### Scope expansion needed:
-- Marketing and management science domains
-- Survey paper extraction guidance
-- Experimental paper extraction guidance
-- Review paper handling clarification
+### Sub-task 3.1: Experimental research template (Completed 2026-05-15)
 
-### Note:
-When resuming Task 3, ask user step by step to collect needed information.
+Created three separate paper summary templates:
+- `kb-skill/extract/templates/paper_summary_archival.md` - Archival/empirical papers
+- `kb-skill/extract/templates/paper_summary_experimental.md` - Experimental papers
+- `kb-skill/extract/templates/paper_summary_analytical.md` - Analytical model papers
+
+Updated `kb-skill/extract/SKILL.md`:
+- Added Paper Type Detection section at top
+- Detection based on data source + methodology
+- Template routing logic
+
+Key changes per user feedback:
+- `title` field quoted to handle colons
+- Experimental template: Methods merged into Experimental Design section
+- Experimental Design: Added "Others" option for custom designs
+- Templates don't reference each other (self-contained)
+
+### Remaining items:
+- Survey paper extraction guidance (future task)
+- Review paper handling clarification (future task)
+- Marketing/management science domains (future task)
+
+---
+
+## Task 3.2: Template cleanup and wiki creation strengthening
+
+- **Status**: Completed
+- **Started**: 2026-05-15
+- **Finished**: 2026-05-15
+
+### Sub-task 3.2.1: Remove evidence supporting/contracting from experimental template (Completed)
+
+Removed evidence supporting/contracting section from `paper_summary_experimental.md`:
+- Deleted lines 30-33 (the "For each theory, note..." section)
+- This content belongs to wiki/templates/theory.md, not summary template
+
+### Sub-task 3.2.2: Strengthen wiki creation trigger (Completed)
+
+Added explicit "Wiki Creation Trigger" section to `kb-skill/extract/SKILL.md`:
+- Trigger Tables: Concepts, Variables, Theories, Constructs
+- Methods Creation Trigger: Based on summary Methods section markers
+- Wiki Creation Process: Semantic check → create/update → fill template
+- Added "**DO NOT skip wiki page creation**" emphasis
+
+This ensures agent creates wiki pages after completing summary tables.
+
+### Sub-task 3.2.3: Move archival-specific instructions to reference file (Completed)
+
+Created `kb-skill/extract/references/archival_extract_guidance.md` containing:
+- Hypothesis extraction with argument structure analysis
+- Methods filtering for econometric methods (OLS, DiD, 2SLS, etc.)
+- Summary requirements (Claim-Ground Truth correspondence)
+- Ground truth format for regression coefficients
+- Measures/variables filtering for archival papers
+
+Refactored `kb-skill/extract/SKILL.md` to be concise hub file:
+- Paper-Type-Specific Guidance section with references
+- Common content: Paper type detection, wiki triggers, concept extraction, variable naming
+- Analytical and experimental papers get brief inline guidance
+- Archival papers reference the detailed guidance file
+
+**Archival guidance NOT valuable for other research types**:
+- Experimental papers test pre-existing theories (no argument structure analysis needed)
+- Experimental papers use different ground truth format (manipulated/dependent variable)
+- Analytical papers use theorem/proposition format (not regression coefficients)
+
+---
+
+## Task 3.3: Survey and Review paper extraction guidance
+
+- **Status**: Completed
+- **Started**: 2026-05-15
+- **Finished**: 2026-05-15
+
+### Sub-task 3.3.1: Survey paper template and guidance (Completed)
+
+Created survey paper template `templates/paper_summary_survey.md`:
+- Hypothesis section (optional - theory-driven causal predictions)
+- Claim Findings (interpreted results)
+- Ground Truth Findings (question-based results format OR statistical analysis format)
+- Concepts Defined (easier extraction - from research question, title, introduction)
+- Measures/Variables (survey questions grouped by dimensions, wiki naming `{dimension}_{concept}_survey`)
+- Survey Design section: survey type, respondent target, response categories, question sequence, survey instrument, non-response handling, reliability measures
+- Face-to-Face Interview Details: interview type (structured/semi/unstructured), interviewee selection
+- Wiki markers: variables `_survey`, methods `_survey_instrument`
+
+Created `references/survey_extract_guidance.md`:
+- Survey paper recognition criteria
+- Survey vs Experimental comparison
+- Ground truth format for question-based results (grouping questions by dimensions)
+- Variables = survey questions grouping structure (Concept → Dimensions → Questions)
+- Wiki naming for survey variables with `_survey` marker
+- Survey Design extraction details
+- Face-to-face interview specifics
+- Hypothesis extraction reference to archival guidance
+
+### Sub-task 3.3.2: Review paper guidance (Completed)
+
+Created `references/review_extract_guidance.md`:
+- Review paper recognition criteria
+- Different workflow: wiki consolidation, NOT full summary extraction
+- Step 1: Check concept page existence
+- Step 2: Create concept page if not exists (fill template, oldest 2 + nearest 3 papers only)
+- Step 3: Update concept page if exists
+- Minimal summary format for review papers
+- ONLY create concept page for main concept
+- No new variable/method pages (review papers don't introduce new measures)
+
+Key principle: Wiki pages should remain concise—don't grow as long as review papers. Instruct readers to read review for more details.
+
+### Sub-task 3.3.3: Hypothesis section for survey/experimental templates (Completed)
+
+Added Hypothesis section to experimental template:
+- Optional: Only if experiment develops its own hypothesis
+- If testing pre-existing theory without new hypothesis: Write "No explicit hypothesis developed"
+- Argument structure table with reference to archival guidance for detailed analysis
+- Reasoning approach and evaluation sections
+
+Updated archival template Hypothesis section:
+- Added reference to `archival_extract_guidance.md` for detailed premise classification
+
+Updated kb-extract/SKILL.md:
+- New section "Hypothesis Extraction (Multiple Paper Types)" explaining:
+  - Archival: Most common (theoretical arguments with empirical testing)
+  - Survey: Theory-driven causal predictions (Brown 1995 reference)
+  - Experimental: Predicting manipulation effect on dependent variable
+  - Analytical: Propositions from model assumptions
+  - Review: Does NOT develop hypotheses (consolidates existing)
+- All hypothesis papers reference archival guidance for argument structure analysis
+
+### Updated Paper Type Detection Table
+
+| Paper Type | Template | Guidance Reference |
+|------------|----------|-------------------|
+| Archival | full template | archival_extract_guidance.md |
+| Experimental | full template | inline + archival (for hypothesis) |
+| Analytical | full template | inline |
+| Survey | full template | survey_extract_guidance.md |
+| Review | minimal summary | review_extract_guidance.md |
+
+---
+
+## Task 3.4: Fix survey wiki naming and ground truth format
+
+- **Status**: Completed
+- **Started**: 2026-05-15
+- **Finished**: 2026-05-15
+
+### Issue 1: Survey Wiki Naming Incorrect
+
+**Problem**: Initial survey wiki naming used `{dimension}_{concept}_survey` per question, which was incorrect.
+
+**Correct understanding from reference**:
+- Questions are **GROUPED** by dimension (multiple questions → one wiki page)
+- Wiki naming: `{dimension}_survey` (one page per dimension group)
+- Concepts: Standard naming `[[concepts/{concept}]]` (NO `_survey` marker)
+
+**Fixes applied**:
+- `templates/paper_summary_survey.md`: Variables table now shows one row per **dimension** (grouped questions), not per individual question
+- `references/survey_extract_guidance.md`: Wiki naming section updated with correct grouping explanation
+- `kb-skill/extract/SKILL.md`: Survey-Specific Wiki Naming table shows correct naming for concepts (no marker) vs variables (grouped with `_survey`)
+
+### Issue 2: Ground Truth Format Consolidated
+
+**Problem**: Ground Truth concept (most objective results) is common to all paper types, but format was scattered across templates and guidance files.
+
+**Fix**: Added "Ground Truth Format by Paper Type" section to `kb-skill/extract/SKILL.md`:
+- Table showing format for each paper type with examples
+- Archival: Regression coefficient format
+- Experimental: Manipulated/dependent relationship format
+- Survey: Question results format (grouped by dimension)
+- Analytical: Theorem/Proposition format
+- Review: NO Ground Truth (consolidates existing)
+
+**Reference pattern**: Centralized format overview in SKILL.md, detailed guidance in type-specific reference files.
+
+---
