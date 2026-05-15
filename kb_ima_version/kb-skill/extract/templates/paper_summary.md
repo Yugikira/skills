@@ -1,0 +1,122 @@
+---
+title: {Paper Title}
+doi: {doi}
+citekey: {citekey}
+authors: [{Author 1}, {Author 2}, ...]
+year: {YYYY}
+journal: {Journal Name}
+keywords: [{keyword1}, {keyword2}, ...]
+processed: {YYYY-MM-DD}
+source: [[raw/papers/{citekey}/{citekey}.pdf]]
+---
+
+# {Paper Title}
+
+## One-Line Summary
+{What the paper contributes in one sentence}
+
+## Abstract Summary
+{2-3 sentence paraphrase}
+
+## Claimed Findings
+> **3-5 KEY INTERPRETATIONS** - Authors' main claims.
+>
+> **Important**: Claims should correspond to Ground Truth findings below. Claim N should be supported by Ground Truth Finding N.
+
+- Claim 1: {primary interpretation}
+- Claim 2: {secondary interpretation}
+- Claim 3: {third interpretation}
+
+## Ground Truth Findings
+> **3-5 KEY FINDINGS ONLY** - Main empirical results with variable definitions.
+>
+> Format: "Variable X (defined as [formula]) has β=YY (p<ZZ) in [model] (n=XXXX)"
+>
+> **Correspondence**: The first N findings here should directly support the N claims above.
+>
+> If a variable is defined in Measures table or earlier finding, can reference it.
+
+- Finding 1: {key result supporting Claim 1 - with full definitions}
+- Finding 2: {key result supporting Claim 2 - can reference Finding 1}
+- Finding 3: {key result supporting Claim 3}
+- Finding 4: {optional}
+- Finding 5: {optional}
+
+## Other Interpretations
+> Alternative views from other papers.
+
+- [Awaiting future papers]
+
+## Concepts Defined
+> **Concepts**: Abstract theoretical ideas (not directly observable).
+> **Constructs**: Multi-item measures that operationalize concepts.
+>
+> **Where to find**: Introduction, Hypothesis Development, Literature Review sections.
+> **If no explicit definition**: Provide common-sense definition with `[common-sense]` marker.
+
+| Concept | Definition | Constructs | Wiki Page |
+|---------|------------|------------|-----------|
+| {concept} | {abstract theoretical definition} | {construct names that operationalize it} | [[concepts/{concept}]] |
+
+## Measures/Variables
+> **Paper Variable** = exact name from paper (use in Ground Truth findings)
+> **Wiki Name** = common-sense name (only for directly measurable variables)
+> **Wiki Creation**: Skip derived/composite (PCA, indices, fitted values)
+
+| Paper Variable | Wiki Name | Constructs | Concept | Computational Definition | Wiki Page |
+|----------------|-----------|------------|---------|--------------------------|-----------|
+| {paper_name} | {wiki_name} | {construct} | {concept} | {exact formula} | [[variables/{wiki_name}]] or [no wiki] |
+
+## Model Parameters & Constructs (Analytical Models Only)
+> **For analytical/model papers**: These are theoretical constructs.
+> Create wiki/constructs/ pages for these. NO wiki/variables/ pages.
+
+| Construct | Symbol | Type | Definition | Wiki Page |
+|-----------|--------|------|------------|-----------|
+| {name} | λ | model_parameter | {definition} | [[constructs/{name}]] |
+| {name} | - | definitional_construct | {definition} | [[constructs/{name}]] |
+
+## Hypothesis
+> If no explicit hypothesis: write "No explicit hypothesis stated in this paper."
+>
+> **If hypothesis exists**, document the argument structure:
+
+### Hypothesis Statement
+{The paper's main hypothesis or research question}
+
+### Argument Structure
+> Premises intended to support the hypothesis.
+
+| Premise | Source | Type |
+|---------|--------|------|
+| {Premise 1} | {Literature/Theory/Data} | {Assumption/Observation/Claim} |
+| {Premise 2} | {source} | {type} |
+
+### Reasoning Approach
+- **Type**: [Deductive | Inductive] - Which approach the paper uses to form the hypothesis
+- **Relation**: [Valid (necessarily follows) | Strong (probabilistic support)] - Does the conclusion follow from premises?
+
+### Evaluation
+- **Status**: [Sound | Unsound | Cogent | Uncogent]
+- **Reason**: {why this evaluation}
+
+> **Criteria Reference**:
+> - Deductive: Sound = valid + all premises true with strong evidence; Unsound = else
+> - Inductive: Cogent = strong + all premises true; Uncogent = else
+
+## Methods
+{Brief methodology, sample, data sources}
+
+> **Wiki Creation**: Only for novel designs/models. Skip standard methods (OLS, DiD, etc.).
+
+## Limitations
+- {limitation 1}
+- {limitation 2}
+
+## Related Papers
+> **Process**: List key papers with relevance first. Enrich with full citations from paper's Reference section.
+> **Linking**: Link only to papers already in wiki database (checked via Scripts/check_related_papers.py).
+
+| Authors | Year | Title | Relevance | Wiki Link |
+|---------|------|-------|-----------|-----------|
+| {Author et al.} | {YYYY} | {Full Title} | {why related} | [[source/summary/{citekey}_summary]] or [not in wiki] |
