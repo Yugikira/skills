@@ -45,7 +45,7 @@ Check each summary table for Wiki Page column:
 |-------|-------------------|--------|
 | Concepts Defined | `[[concepts/{name}]]` | Create if page doesn't exist |
 | Measures/Variables | `[[variables/{name}]]` or `[no wiki]` | Create for `[[variables/{name}]]` entries |
-| Ground Theories (experimental) | `[[theories/{name}]]` | Create if page doesn't exist |
+| Ground Theories (experimental) | `[[theories/{name}]]` | **CHECK FIRST** - semantic duplicate check → create using theory_exp.md or update existing page with evidence |
 | Model Parameters & Constructs (analytical) | `[[constructs/{name}]]` | Create if page doesn't exist |
 
 ### Survey-Specific Wiki Naming
@@ -127,6 +127,12 @@ Paper is an analytical model if:
 - Results are proofs/theorems, NOT coefficient estimates
 - "Variables" are model parameters (symbols like λ, σ²), not observable measures
 
+**Summary Requirements for Analytical Papers**:
+
+1. **Claim Findings FIRST**: 3-5 key theoretical implications
+2. **Ground Truth Findings SECOND**: 3-5 theorems/propositions
+3. **Correspondence**: Claim N should be supported by Theorem/Proposition N
+
 **Extraction Rules for Analytical Models**:
 
 1. **SKIP wiki/variables/** - Model parameters are theoretical constructs, NOT observable
@@ -147,12 +153,23 @@ Experimental papers differ from archival in structure:
 - **Ground Truth format**: Manipulated/dependent variable relationship
 - **Ground Theories**: Link to existing theories (experimental papers test pre-existing theories)
 
+For detailed experimental extraction guidance (manipulation handling, wiki accumulation), see:
+
+→ **`references/experimental_extract_guidance.md`**
+
+**Summary Requirements for Experimental Papers**:
+
+1. **Claim Findings FIRST**: 3-5 key interpretations with problem context
+2. **Ground Truth Findings SECOND**: 3-5 objective results (manipulated/dependent relationship)
+3. **Correspondence**: Claim N should be supported by Finding N
+
 **Hypothesis in Experimental Papers**:
 - Experimental papers CAN develop hypotheses (predicting manipulation effect)
 - If hypothesis exists, use archival guidance argument structure analysis
 - See template `paper_summary_experimental.md` for experimental-specific sections:
   - Ground Theories (link to existing theories)
   - Experimental Design (design type, control group, randomisation, counterbalancing)
+  - Manipulations (manipulation methods overview across studies)
   - The Context (external validity factors)
 
 ### Review Papers
@@ -261,5 +278,6 @@ Four paper summary templates based on paper type:
 ## References
 
 - `references/archival_extract_guidance.md` - Archival paper detailed guidance
+- `references/experimental_extract_guidance.md` - Experimental paper manipulation handling
 - `references/survey_extract_guidance.md` - Survey paper detailed guidance
 - `references/review_extract_guidance.md` - Review paper wiki consolidation workflow

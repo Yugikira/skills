@@ -11,12 +11,22 @@ This skill provides wiki page creation rules for kb-ingest. Used by both the ext
 
 Templates are in `templates/`:
 
-- `concept.md` - Concept wiki page template
+### Concept/Theory/Construct (All Methodologies)
+- `concept.md` - Concept wiki page template (domain-agnostic)
 - `construct.md` - Construct wiki page template (for analytical models)
-- `method.md` - Method wiki page template
+- `theory.md` - Theory wiki page template (domain-agnostic, general use)
+- `theory_exp.md` - Experimental theory template (with Evidence Supporting/Contradicting tables)
+
+### Variables (Methodology-Specific)
+- `variable.md` - Variable wiki page template (archival/experimental - computational formula)
+- `variable_survey.md` - Survey variable template (questions grouped by dimension, reliability measures)
+- `variable_experimental.md` - Experimental variable template (manipulation/measurement details for replication)
+
+### Methods (Methodology-Specific)
+- `method.md` - Method wiki page template (archival - econometric, identification)
 - `method_analytical.md` - Analytical model method template
-- `theory.md` - Theory wiki page template
-- `variable.md` - Variable wiki page template
+- `method_experimental.md` - Experimental design template (treatment/control, randomization)
+- `method_survey_instrument.md` - Survey instrument template (questionnaire, validity, reliability)
 
 ## Scripts
 
@@ -43,6 +53,15 @@ Use `templates/concept.md` structure. Fill these sections from paper:
 
 ### 2. Variables → wiki/variables/{variable}.md
 
+**Methodology-specific templates**:
+
+| Paper Type | Template | Key Differences |
+|------------|----------|-----------------|
+| **Archival/Experimental** | `variable.md` | Single computational formula, validity notes |
+| **Survey** | `variable_survey.md` | Questions grouped by dimension, reliability measures, response scale |
+
+#### Archival/Experimental Variables
+
 Use `templates/variable.md` structure. Fill these sections:
 
 | Template Section | Source | Required? |
@@ -55,7 +74,62 @@ Use `templates/variable.md` structure. Fill these sections:
 | Papers Using | Link to summary | **YES** |
 | Interpretations | How variable is interpreted | If discussed |
 
+#### Survey Variables
+
+Use `templates/variable_survey.md` structure. Fill these sections:
+
+| Template Section | Source | Required? |
+|------------------|--------|-----------|
+| What It Measures | Variables table: Concept + Dimension | **YES** |
+| Questions Relating to This Dimension | Variables table + Survey Design | **YES** |
+| Studies Using This Dimension | Survey Design: Reliability/Validity + summary | **YES** |
+
+**Multi-paper accumulation**:
+- Questions table: One row per semantic question group (ONE precise excerpt, combine identical questions)
+- Papers column: First + most recent from top journals
+- Studies table: One row per paper with paper-specific reliability (α), validity, key findings (Sample removed - details in paper summary)
+
+**Naming**: `{dimension}_survey` for survey variables (questions grouped by dimension).
+
+#### Experimental Variables
+
+Use `templates/variable_experimental.md` structure. Fill these sections:
+
+| Template Section | Source | Required? |
+|------------------|--------|-----------|
+| What It Measures | Claim Findings: abstract concept level | **YES** |
+| Experimental Operationalization (IV) | Manipulations table + Experimental Design | **YES** for manipulated IV |
+| Experimental Operationalization (DV) | Measures/Variables + Experimental Design | **YES** for DV |
+| Papers Using | Link to summary | **YES** |
+
+**Multi-paper accumulation**:
+- For Manipulated IV table: One row per **Condition Type** (Treatment, Control, Hedonic, Utilitarian, etc.)
+- **Condition Type column**: Each row = one condition type from one paper
+- **Manipulation Method column**: Corresponds to the Condition Type in that row (no `|` separator needed)
+- For DV table: One row per paper's measurement approach (Paper, Measurement Method, Scale/Units, Collection Procedure, Validity)
+- Selection: First + most recent from top journals for similar manipulation/measurement strategy
+- **Same variable stays in ONE page** across all condition types and papers
+
+**Naming**: `{variable}_exp.md` for experimental variables.
+
+**Why experimental needs separate template**:
+- Dependent variable: How outcome is **measured** (not formula, but operationalization)
+- Independent variable: How treatment is **manipulated** (not computed, but implemented)
+- Enable replication: Document exact manipulation/measurement procedures
+- Multi-paper: Track how different papers operationalize same variable
+
 ### 3. Methods → wiki/methods/{method}.md
+
+**Methodology-specific templates**:
+
+| Paper Type | Template | Key Differences |
+|------------|----------|-----------------|
+| **Archival** | `method.md` | Econometric models, identification strategies, steps |
+| **Analytical** | `method_analytical.md` | Model setup, assumptions, derivations, proofs |
+| **Experimental** | `method_experimental.md` | Treatment/control, randomization, counterbalancing |
+| **Survey** | `method_survey_instrument.md` | Questionnaire structure, validity, reliability |
+
+#### Archival Methods
 
 Use `templates/method.md` structure. Only create for novel designs/models.
 
@@ -67,6 +141,45 @@ Use `templates/method.md` structure. Only create for novel designs/models.
 | Requirements | Data, tools, assumptions needed | If available |
 | Limitations | What method cannot do | If discussed |
 | Papers Using | Link to summary | **YES** |
+
+#### Analytical Model Methods
+
+Use `templates/method_analytical.md`. Fill:
+
+| Template Section | Source | Required? |
+|------------------|--------|-----------|
+| Overview | Model Structure section | **YES** |
+| Basic Setup | Key Equations table | **YES** |
+| Model Variations | Comparative Statics | If available |
+| Papers Using | Link to summary | **YES** |
+
+#### Experimental Designs
+
+Use `templates/method_experimental.md`. Fill:
+
+| Template Section | Source | Required? |
+|------------------|--------|-----------|
+| Design Structure | Experimental Design: Design Type | **YES** |
+| Key Features | Randomization, Control Group, Counterbalancing | **YES** |
+| Procedure | Experimental Design: Procedure | **YES** |
+| Subject Pool | Experimental Design: Subjects | **YES** |
+| External Validity | The Context section | **YES** |
+| Papers Using | Link to summary | **YES** |
+
+#### Survey Instruments
+
+Use `templates/method_survey_instrument.md`. Fill:
+
+| Template Section | Source | Required? |
+|------------------|--------|-----------|
+| Instrument Structure | Measures/Variables table + Survey Design | **YES** |
+| Development Process | Survey Design: Survey Instrument | If new instrument |
+| Validity Testing | Survey Design section | If tested |
+| Reliability Testing | Survey Design: Reliability Measures | **YES** |
+| Administration Guidelines | Survey Design section | If available |
+| Papers Using | Link to summary | **YES** |
+
+**Naming**: `{instrument}_survey_instrument` for survey instruments.
 
 ### 4. Theories → wiki/theories/{theory}.md
 
@@ -82,27 +195,104 @@ Use `templates/construct.md` structure. For analytical model papers:
 | Template Section | Source | Required? |
 |------------------|--------|-----------|
 | Definition | Paper model section | **YES** |
-| Mathematical Representation | Model equations | **YES** |
 | Role in Model | How construct is used | **YES** |
 | Papers Using | Link to summary | **YES** |
 
+**Note**: Mathematical notation varies by paper and is not core knowledge. Do not create "Mathematical Representation" section.
+
 ## What to Create vs Skip
 
-### Methods Filtering
+### Methods Filtering (by Paper Type)
+
+#### Archival Papers
 
 **SKIP** - NO wiki/methods/ page for:
 - Standard econometric methods: OLS, Fixed Effects, Random Effects
 - Standard causal identification: 2SLS, GMM, DiD exploiting new regulation/law as exogenous shock, Regression Discontinuity (unless novel threshold)
 - Standard data methods: Panel data construction, variable winsorization
 
-**CREATE** wiki/methods/ page for:
-- Analytical/model papers: Full model specifications, assumptions, derivations, proofs
+**CREATE** wiki/methods/{method}.md (using `method.md`) for:
 - Novel identification designs: Unique research design settings for causality
 - Novel methodological contributions: New measurement approaches, new estimators, new tests
 
-### Variables Filtering
+#### Analytical Model Papers
 
-**CREATE** wiki/variables/ page for (directly measurable):
+**CREATE** wiki/methods/{baseline_model}.md (using `method_analytical.md`) for:
+- **Baseline/classical model** that subsequent variations stem from
+- The foundational model that defines the theoretical framework
+- Example: `Noisy_Rational_Expectations_Model.md` for Grossman-Stiglitz (1980) baseline
+
+**ADD TO VARIATIONS** (in baseline page's Model Variations table) for:
+- Model variations with modified assumptions from baseline
+- Extensions that generate **significant new insights** or **different predictions**
+- Subsequent papers using same model family with modifications
+
+**SKIP** - NO wiki/methods/ page for:
+- Model variations without significant new insights
+- Minor parameter adjustments
+- Variations already documented in baseline page's Model Variations table
+
+**Reference**: See `references/Noisy_Rational_Expectations_Model.md` for example of baseline + variations structure.
+
+#### Experimental Papers
+
+**SKIP** - NO wiki/methods/ page for:
+- Standard designs: Simple post-test only control group, simple pre/post-test
+- Standard factorial designs without methodological innovation
+
+**CREATE** wiki/methods/{design}_experimental.md (using `method_experimental.md`) for:
+- Novel experimental designs: Unique treatment structures, novel control mechanisms
+- Complex factorial designs with innovative methodology
+- Field experiments with unique settings
+
+#### Survey Papers
+
+**SKIP** - NO wiki/methods/ page for:
+- Well-established instruments from prior research (already documented)
+- Standard survey administration procedures
+
+**CREATE** wiki/methods/{instrument}_survey_instrument.md (using `method_survey_instrument.md`) for:
+- Novel survey instruments: New questionnaires with validity/reliability testing
+- Modified established instruments with significant changes
+
+### Variables Filtering (by Paper Type)
+
+### Theories Filtering (Experimental Papers - Ground Theories)
+
+**CRITICAL for Experimental Papers**: The summary's Ground Theories table links to `[[theories/{theory}]]`. These are theories **referenced from prior literature** (not necessarily novel theories contributed by the paper).
+
+**ALWAYS CHECK FIRST, THEN CREATE OR UPDATE**:
+
+1. **Pre-creation semantic check**: Follow Pre-Creation Semantic Check process
+2. **If page exists**: Update existing page - add paper to Evidence Supporting/Contradicting tables
+3. **If no page**: Create new page using `templates/theory_exp.md`
+
+**Use template**: `templates/theory_exp.md` (experimental-specific with evidence tables)
+
+**Evidence table selection criteria**:
+- **Oldest 2** from top journals (earliest experimental tests)
+- **Newest 3** from top journals (most recent experimental tests)
+- Max 5 papers total per table (Evidence Supporting + Evidence Contradicting)
+
+**Evidence Supporting table columns**: Paper, Journal, Year, Experimental Design, Key Finding, Support Type
+**Evidence Contradicting table columns**: Paper, Journal, Year, Experimental Design, Contradictory Finding, Nature of Contradiction
+
+**Theory Types**:
+| Theory Type | Original Source | Wiki Content Focus |
+|-------------|-----------------|---------------------|
+| Referenced (prior literature) | Link to original paper [[source/summary/{citekey_origin}]] | Core propositions + how this paper tests/applies |
+| Novel (paper's contribution) | Link to this paper | New theoretical framework introduced |
+
+**Example**:
+- Paper: "Warmth and Competence in Consumer Judgment" (2024)
+- Ground Theories table: Stereotype Content Model → [[source/summary/cuddy2008_summary]]
+- Action: Check if wiki/theories/Stereotype_Content_Model.md exists
+- If exists: Add 2024 paper to Evidence Supporting table
+- If not exists: CREATE using theory_exp.md, link to Cuddy 2008 as original source
+
+#### Archival Papers
+
+**CREATE** wiki/variables/{variable}.md (using `variable.md`) for (directly measurable):
 - Raw counts: Number of items
 - Indicators: Binary variables (0/1 flags)
 - Ratios from raw data: Proportions, percentages
@@ -117,6 +307,32 @@ Use `templates/construct.md` structure. For analytical model papers:
 - Generic names: Non-descriptive names applicable to any paper
 - Control variables not essential to the paper
 
+#### Experimental Papers
+
+**CREATE** wiki/variables/{variable}_exp.md (using `variable_experimental.md`) for:
+- **Dependent variables**: Measured outcome variables (how outcome is operationalized)
+- **Manipulated independent variables**: Treatment variables (how manipulation is implemented)
+
+**Key documentation for replication**:
+- Measurement method for DV (scale, procedure, reliability)
+- Manipulation method for IV (treatment levels, control condition, manipulation check)
+- External validity factors (task complexity, incentives, location)
+
+**SKIP** - NO wiki page for:
+- Subject characteristics (background variables, not manipulated)
+- Control variables not essential to experimental design
+
+#### Survey Papers
+
+**CREATE** wiki/variables/{dimension}_survey.md (using `variable_survey.md`) for:
+- Question dimensions: Multiple questions measuring one aspect of concept
+- With reliability measures: Cronbach's alpha, test-retest
+- With response scale: Likert, scalar, yes-no
+
+**SKIP** - NO wiki page for:
+- Individual single questions (must be grouped by dimension)
+- Derived survey indices (PCA from survey responses)
+
 ### Analytical Model Papers
 
 Paper is an analytical model if:
@@ -127,8 +343,15 @@ Paper is an analytical model if:
 
 For analytical models:
 - **SKIP wiki/variables/** — model parameters are theoretical constructs
-- **CREATE wiki/constructs/{construct}.md** for model parameters and definitional constructs
-- **CREATE wiki/methods/{model}.md** using templates/method_analytical.md
+- **CREATE wiki/constructs/{innovative_construct}.md** ONLY for:
+  - **Innovative theory constructs** that extend existing frameworks
+  - New definitional constructs specific to this paper's contribution
+  - Novel conceptual entities introduced by the paper
+- **SKIP wiki/constructs/** for:
+  - Standard constructs from classical models (already documented)
+  - Model parameters from baseline models (documented in baseline method page)
+  - Common constructs used across multiple existing papers (update existing page instead)
+- **CREATE wiki/methods/{baseline_model}.md** using templates/method_analytical.md
 - Ground Truth: Use Theorem/Proposition format
 
 ## Variable Naming Guidelines

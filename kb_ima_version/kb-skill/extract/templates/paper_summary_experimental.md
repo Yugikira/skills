@@ -44,23 +44,27 @@ paper_type: experimental
 
 ### Reasoning Approach
 - **Type**: [Deductive | Inductive]
-- **Relation**: [Valid | Strong]
+- **Relation**: [Valid | Strong] (with one line reasoning)
 
 ### Evaluation
 - **Status**: [Sound | Unsound | Cogent | Uncogent]
 - **Reason**: {why this evaluation}
 
 ## Claim Findings
-> **Problem statement + interpretation of experiment results.**
-> This is NOT just findings interpretation - include the problem context.
+> **3-5 KEY INTERPRETATIONS** - Problem statement + experiment results interpretation.
+>
+> **Important**: Claims should correspond to Ground Truth findings below. Claim N should be supported by Ground Truth Finding N.
 
 - Claim 1: {problem context + main interpretation}
 - Claim 2: {secondary interpretation}
 - Claim 3: {third interpretation}
 
 ## Ground Truth Findings
-> **Most objective results.**
+> **3-5 KEY FINDINGS ONLY** - Most objective results.
+>
 > Format: "With subjects from {background}, participating in {study}. The manipulated variable {X} is {relationship} to dependent variable {Y}."
+>
+> **Correspondence**: The first N findings here should directly support the N claims above.
 
 - Finding 1: With subjects from {brief subject background}, participating in {study name/design}. The manipulated variable {X} is positively/negatively related to the dependent variable {Y} (p<ZZ, n=XXXX).
 - Finding 2: {additional finding}
@@ -122,6 +126,21 @@ paper_type: experimental
 | Paper Variable | Wiki Name | Constructs | Concept | Computational Definition | Wiki Page |
 |----------------|-----------|------------|---------|--------------------------|-----------|
 | {paper_name} | {wiki_name} | {construct} | {concept} | {formula} | [[variables/{wiki_name}]] or [no wiki] |
+
+## Manipulations
+> **Manipulation overview table** - consolidates how variables are manipulated across studies.
+> One row per **Condition Type** (Treatment, Control, Hedonic, Utilitarian, etc.).
+> Each row's Manipulation Method corresponds to that Condition Type.
+
+| Paper Variable | Condition Type | Manipulation | Studies | Wiki Page |
+|----------------|----------------|--------------|---------|-----------|
+| {variable_name} | Treatment | {how treatment operationalized} | Study 1a (n=511 students) | [[variables/{wiki_name}_exp]] |
+| {variable_name} | Control | {how control condition implemented} | Study 1a (n=511 students) | [[variables/{wiki_name}_exp]] |
+| {variable_name} | Hedonic | {hedonic manipulation description} | Study 1 (n=200 MTurk) | [[variables/{wiki_name}_exp]] |
+| {variable_name} | Utilitarian | {utilitarian manipulation description} | Study 1 (n=200 MTurk) | [[variables/{wiki_name}_exp]] |
+
+**Studies format**: `Study {number} (n={sample size} {subject pool})`
+**DV rows**: For dependent variables, show `{measured}` in Manipulation column or skip if not manipulated.
 
 ## Limitations
 - {limitation 1}
