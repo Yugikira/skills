@@ -28,8 +28,18 @@ Unified skill for managing academic paper knowledge bases. Currently supports: *
 
 ## Domain Scope
 
-Primary domains: **economics, finance, accounting**
-Related fields: econometrics, behavioral economics, financial mathematics, accounting regulation
+Primary domains: **economics, finance, accounting, management science, marketing**
+Related fields: econometrics, behavioral economics, financial mathematics, accounting regulation, organizational behavior, consumer behavior, strategic management
+
+### Supported Research Methodologies
+
+| Methodology | Typical Domains | Template |
+|-------------|-----------------|----------|
+| **Archival/Empirical** | Economics, finance, accounting | `paper_summary_archival.md` |
+| **Experimental** | Behavioral economics, marketing, organizational behavior | `paper_summary_experimental.md` |
+| **Survey** | Management science, marketing, organizational research | `paper_summary_survey.md` |
+| **Analytical** | Financial mathematics, economic theory, accounting theory | `paper_summary_analytical.md` |
+| **Review** | All domains | Minimal summary (wiki consolidation) |
 
 Papers outside these domains will prompt for user confirmation.
 
@@ -137,7 +147,7 @@ Scripts and templates are located inside each sub-skill:
 
 ### wiki/
 - scripts/: `check_wiki_collision.py`
-- templates/: `concept.md`, `construct.md`, `method.md`, `method_analytical.md`, `theory.md`, `variable.md`
+- templates/: `concept.md`, `construct.md`, `theory.md`, `variable.md`, `variable_survey.md`, `method.md`, `method_analytical.md`, `method_experimental.md`, `method_survey_instrument.md`
 
 ### lint/
 - scripts/: `check_wikilinks.py`, `list_orphans.py`

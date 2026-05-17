@@ -8,10 +8,7 @@ first_defined: [[source/summary/{citekey}]]
 # {Construct Name}
 
 ## Definition
-{Mathematical or formal definition}
-
-## Mathematical Representation
-{Symbol: e.g., λ, σ_ε², etc.}
+{Formal definition - the core knowledge that transcends specific notation}
 
 ## Role in Model
 {What role this construct plays in the analytical model}

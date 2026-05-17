@@ -43,15 +43,18 @@ paper_type: survey
 - **Reason**: {why this evaluation}
 
 ## Claim Findings
-> **Interpreted results from survey outcome.**
-> Authors' main interpretations of survey results.
+> **3-5 KEY INTERPRETATIONS** - Authors' main interpretations of survey results.
+>
+> **Important**: Claims should correspond to Ground Truth findings below. Claim N should be supported by Ground Truth Finding N.
 
 - Claim 1: {primary interpretation}
 - Claim 2: {secondary interpretation}
 - Claim 3: {third interpretation}
 
 ## Ground Truth Findings
-> **Most objective results from survey.**
+> **3-5 KEY FINDINGS ONLY** - Most objective results from survey.
+>
+> **Correspondence**: The first N findings here should directly support the N claims above.
 
 ### Question-Based Results
 {For surveys with direct question results}
@@ -62,7 +65,7 @@ paper_type: survey
 ### Statistical Analysis Results
 {If survey conducts statistical analysis, describe as archival ground truth format}
 
-- Finding 1: {Variable X} (defined as {formula}) has coefficient β=YYY (p<ZZ) in {model type} (n=XXXX).
+- Finding 3: {Variable X} (defined as {formula}) has coefficient β=YYY (p<ZZ) in {model type} (n=XXXX).
 
 ## Concepts Defined
 > **Survey concepts are easier to extract.**

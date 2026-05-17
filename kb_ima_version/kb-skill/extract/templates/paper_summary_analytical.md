@@ -20,14 +20,18 @@ paper_type: analytical
 {2-3 sentence paraphrase}
 
 ## Claim Findings
-> **Theoretical implications of the model results.**
+> **3-5 KEY THEORETICAL IMPLICATIONS** - Implications of the model results.
+>
+> **Important**: Claims should correspond to Ground Truth findings below. Claim N should be supported by Ground Truth Finding N (Theorem/Proposition).
 
 - Claim 1: {primary theoretical implication}
 - Claim 2: {secondary implication}
 - Claim 3: {third implication}
 
 ## Ground Truth Findings
-> **Use Theorem/Proposition format, NOT coefficient format.**
+> **3-5 KEY FINDINGS ONLY** - Use Theorem/Proposition format, NOT coefficient format.
+>
+> **Correspondence**: The first N findings here should directly support the N claims above.
 
 - Finding 1: **Theorem/Proposition N** - {theorem statement with conditions}
 - Finding 2: **Theorem/Proposition M** - {theorem statement}

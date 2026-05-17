@@ -20,6 +20,27 @@ Paper is a survey if:
 | Random sampling (if possible) | Random assignment |
 | External validity focus | Internal validity focus |
 
+## Summary Requirements for Survey Papers
+
+### Claim Findings: 3-5 Key Interpretations FIRST
+
+Select the authors' **main interpretations** of survey results:
+- What they conclude from the survey findings
+- The story they tell about why results matter
+
+**Write Claims BEFORE Ground Truth** - this establishes the interpretive framework first.
+
+### Ground Truth Findings: 3-5 Key Findings SECOND
+
+Select the **most objective** survey results:
+- Primary question-based results (response patterns, percentages)
+- Statistical analysis results (if regression/correlation conducted)
+- Key dimensions with significant findings
+
+**Correspondence Requirement**: The first N Ground Truth findings should directly support the N Claim findings above. Finding 1 supports Claim 1, Finding 2 supports Claim 2, etc.
+
+DO NOT extract every finding. Quality over quantity.
+
 ## Ground Truth Format for Survey Papers
 
 ### Question-Based Results

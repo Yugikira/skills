@@ -37,8 +37,15 @@ The kb-skill follows the ima-skill nested pattern. Reference this instead of rea
 
 ## Domain Scope
 
-Primary: **economics, finance, accounting**
-Related: econometrics, behavioral economics, financial mathematics, accounting regulation
+Primary: **economics, finance, accounting, management science, marketing**
+Related: econometrics, behavioral economics, financial mathematics, accounting regulation, organizational behavior, consumer behavior, strategic management
+
+The skill now supports multiple research methodologies:
+- **Archival/empirical** - Existing data, observational studies (economics, finance, accounting)
+- **Experimental** - Manipulated variables, treatment/control (behavioral economics, marketing, organizational behavior)
+- **Survey** - Questionnaires, interviews (management, marketing, organizational research)
+- **Analytical** - Mathematical models, proofs (financial mathematics, economic theory)
+- **Review** - Literature synthesis (all domains)
 
 # Constraints
 
