@@ -9,6 +9,9 @@ This skill provides extraction guidance for kb-ingest's Phase 3 subagent. The su
 
 ## Paper Type Detection
 
+**WHO DETERMINES TYPE**: The SUBAGENT reads the paper and determines type.
+**ORCHESTRATOR**: Does NOT need to know paper type before dispatch - subagent handles this.
+
 Select template based on paper type:
 
 | Paper Type | Criteria | Template | Detailed Guidance |

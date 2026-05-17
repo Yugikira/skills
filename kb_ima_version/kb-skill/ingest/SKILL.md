@@ -7,6 +7,15 @@ description: Main skill for ingesting academic papers into the Knowledge Base. O
 
 Ingest academic papers into the Knowledge Base, extracting concepts, theories, variables, and methods.
 
+## Role Division
+
+| Role | Reads | Does NOT Read | Why |
+|------|-------|---------------|-----|
+| **Orchestrator** | kb-skill/SKILL.md, kb-ingest/SKILL.md, templates (for verification only) | Paper .md, kb-extract/SKILL.md, kb-wiki/SKILL.md, summary-agent.md | Orchestrator coordinates pipeline, verifies output structure, doesn't need paper content |
+| **Subagent** | Paper .md, .bib, templates, kb-extract/SKILL.md, kb-wiki/SKILL.md, summary-agent.md | kb-ingest/SKILL.md (pipeline phases) | Subagent does deep reading, extraction, determines paper type |
+
+**Key principle**: Orchestrator provides FILE PATHS and reviews OUTPUT; Subagent reads FILE CONTENTS and determines paper type.
+
 ## Usage Patterns
 
 - `/kb-ingest {doi}` - Ingest paper by DOI (e.g., `/kb-ingest 10.1234/example`)
@@ -18,7 +27,7 @@ Ingest academic papers into the Knowledge Base, extracting concepts, theories, v
 ## Domain Scope
 
 Primary domains: **economics, finance, accounting**
-Related fields accepted: econometrics, behavioral economics, financial mathematics, accounting regulation
+Related fields: econometrics, behavioral economics, financial mathematics, accounting regulation, organizational behavior, consumer behavior, strategic management
 
 Papers outside these domains will prompt for user confirmation.
 
@@ -26,7 +35,13 @@ Papers outside these domains will prompt for user confirmation.
 
 ### Phase 1: Paper Acquisition
 
-**Case A: DOI provided**
+**Fallback Check**: If `libby` MCP tool is not available:
+- Skip Phase 1 extraction steps
+- Move PDF directly: `mkdir -p raw/papers/{filename} && mv {pdf_path} raw/papers/{filename}/{filename}.pdf`
+- Use filename (without .pdf) as provisional citekey
+- Proceed to Phase 2 (PDF Conversion)
+
+**Case A: DOI provided** (requires libby)
 1. Invoke libby-fetch: `/libby fetch {doi}`
 2. Wait for PDF download to `raw/papers/{citekey}/`
 
@@ -59,7 +74,10 @@ If the PDF is inside a subfolder of `raw/data/` (e.g., `raw/data/some_folder/pap
    - If output shows "Failed" or "Cannot extract text": FAIL, proceed to pdftoppm fallback
 5. **pdftoppm fallback** (for scanned PDFs when both above fail):
    a. Run Bash: `pdftoppm -png -f 1 -l 1 {pdf_path} raw/data/temp_page`
-   b. Run MiniMax MCP tool `mcp__MiniMax__understand_image` with prompt "Extract paper title" on `raw/data/temp_page-01.png`
+   b. **Check minimax MCP availability**:
+      - If available: Run `mcp__MiniMax__understand_image` with prompt "Extract paper title"
+      - If NOT available: Use multimodal capability to read `raw/data/temp_page-01.png` directly
+      - If multimodal also fails: Use fallback (missing libby) → move PDF to raw/papers/{filename}
    c. Run Bash: `libby extract {pdf_path} --with-title "{extracted_title}" --format json`
 6. After successful extraction:
    a. PDF is in `~/.lib/papers/{citekey}/` - copy to `raw/papers/{citekey}/`
@@ -81,12 +99,22 @@ If the PDF is inside a subfolder of `raw/data/` (e.g., `raw/data/some_folder/pap
 
 For each paper:
 1. Check if markdown exists: `raw/papers/{citekey}/{citekey}.md`
-2. If not, invoke paddle-pdf: `/paddle-pdf convert raw/papers/{citekey}/{citekey}.pdf -o raw/papers/{citekey}/`
-3. Verify output exists. Note: paddle-pdf automatically names output as `{citekey}.md` (not `output.md`)
+2. If not, use any available PDF conversion tool:
+   - Try paddle-pdf first if available
+   - **Fallback**: Use any pdf convert related skill or tools
+   - **No tools available**: Prompt user "Please convert PDF to markdown manually and place at raw/papers/{citekey}/{citekey}.md"
+3. Verify output exists.
 
 ### Phase 3: Extraction & Wiki Drafting (Single Subagent)
 
-**Token-efficient workflow**: ONE subagent handles all paper reading, summary creation, and wiki page drafting. No further sub-agents are dispatched.
+**ORCHESTRATOR RESTRICTIONS**:
+- ❌ **DO NOT read the paper markdown** - subagent reads it
+- ❌ **DO NOT read kb-extract/SKILL.md, kb-wiki/SKILL.md** - subagent reads them for guidance
+- ❌ **DO NOT "preview" or "understand" the paper** - that's subagent's job
+- ✅ **CAN read templates** - for OUTPUT verification (checking structure), NOT paper understanding
+- ✅ **ONLY provide**: citekey and file paths to subagent
+
+**Token-efficient workflow**: ONE subagent handles all paper reading, summary creation, and wiki page drafting.
 
 For batch (multiple citekeys), process papers sequentially.
 
@@ -97,23 +125,33 @@ Dispatch a SINGLE subagent. **CRITICAL**: This agent must complete ALL work itse
 ```
 Agent prompt for extraction subagent:
 ---
-Follow the Summary Agent instructions in `kb-skill/ingest/summary-agent.md` to extract this paper.
+## YOUR TASK (subagent reads all files itself)
 
-INPUT:
+**INPUT** (orchestrator provides):
 - citekey: {citekey}
-- Paper: raw/papers/{citekey}/{citekey}.md
-- Metadata: Read from raw/papers/{citekey}/{citekey}.bib
-- Summary template: kb-skill/extract/templates/paper_summary.md
-- Extraction guidance: kb-skill/extract/SKILL.md (what to extract, how to format)
-- Wiki creation guidance: kb-skill/wiki/SKILL.md (how to create wiki pages, semantic duplicate check, what to skip)
+
+**FILE PATHS YOU MUST READ** (subagent reads these, NOT orchestrator):
+- Paper markdown: `raw/papers/{citekey}/{citekey}.md`
+- Paper bib: `raw/papers/{citekey}/{citekey}.bib` (read for metadata: authors, year, doi, journal)
+- Templates folder: `kb-skill/extract/templates/` (find template fitting paper type)
+- Extraction guidance: `kb-skill/extract/SKILL.md`
+- Wiki guidance: `kb-skill/wiki/SKILL.md`
+- Summary agent instructions: `kb-skill/ingest/summary-agent.md`
+
+**If .bib file NOT found**:
+- Subagent reads paper and fills metadata placeholders:
+  - authors: [Extract from paper title page]
+  - year: [Extract from paper]
+  - doi: [Extract from paper if available]
+  - journal: [Extract from paper header]
 
 Execute all 6 steps from the Summary Agent:
-1. Read paper
-2. Create summary at source/summary/{citekey}_summary.md
-3. Self-verify GT ↔ Claim correspondence
-4. Run related papers linker
-5. Create wiki pages (follows kb-wiki: includes semantic duplicate check before creation)
-6. Return output report
+1. Read paper and .bib (YOU read, not orchestrator)
+2. Determine paper type and select appropriate template from templates folder
+3. Create summary at source/summary/{citekey}_summary.md
+4. Self-verify GT ↔ Claim correspondence
+5. Run related papers linker
+6. Create wiki pages (follows kb-wiki: includes semantic duplicate check before creation)
 
 OUTPUT: Return summary path and list of wiki pages created/updated/skipped by category.
 ---
@@ -121,7 +159,24 @@ OUTPUT: Return summary path and list of wiki pages created/updated/skipped by ca
 
 ### Phase 4: Wiki Review & Merge (Orchestrator)
 
-After subagent returns, **Orchestrator** reviews and finalizes everything. This is a lightweight quality check — fix only clear errors, don't re-read the full paper.
+After subagent returns, **Orchestrator** reviews OUTPUT files. If issues found, send back to subagent for fixes.
+
+**ORCHESTRATOR reads for review**:
+- Templates (for structure verification - check required sections filled)
+- `source/summary/{citekey}_summary.md` - verify structure, check pages un-created
+- Wiki pages created - verify sections filled, links correct
+
+**ORCHESTRATOR checks**:
+- Required sections in summary (Claim Findings, Ground Truth, Concepts, Variables, Methods)
+- Wiki Page links in tables → check if wiki page was actually created
+- If pages left un-created: send back to subagent with list of missing pages
+- Minor issues: fix directly (broken links, typos)
+
+**ORCHESTRATOR does NOT read**:
+- Paper markdown (already read by subagent)
+- kb-extract/SKILL.md, kb-wiki/SKILL.md (subagent already applied them)
+
+This is a **output review** — verify subagent followed templates, not re-read paper.
 
 #### 4.1 Review Summary Quality
 
