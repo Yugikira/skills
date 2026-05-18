@@ -3,12 +3,15 @@
 Find wiki pages not linked from any _index.md.
 
 Usage:
-    python Scripts/list_orphans.py [--verbose]
+    python scripts/list_orphans.py --wiki-dir=<path> [--verbose]
+    python scripts/list_orphans.py --wiki-dir=../wiki --verbose
 
 This script:
     - Lists all .md in wiki/*/ (excluding _index.md)
     - Checks if each file is referenced in its parent _index.md
     - Reports orphan pages with suggestions for inclusion
+
+Note: --wiki-dir is REQUIRED. Points to the wiki directory containing category folders.
 """
 
 import os
@@ -16,10 +19,7 @@ import re
 import sys
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).parent
-WIKI_DIR = SCRIPT_DIR.parent.parent / "wiki"
-
-CATEGORIES = ["concepts", "theories", "proxies", "methods"]
+CATEGORIES = ["concepts", "theories", "proxies", "methods", "constructs", "variables"]
 
 def get_index_links(index_file: Path) -> set:
     """Extract all wikilinks from an _index.md file."""
@@ -39,7 +39,7 @@ def get_index_links(index_file: Path) -> set:
 
     return names
 
-def find_orphans(verbose: bool = False):
+def find_orphans(wiki_dir: Path, verbose: bool = False):
     """Find all orphan wiki pages."""
     orphan_count = 0
     total_pages = 0
@@ -48,7 +48,7 @@ def find_orphans(verbose: bool = False):
     print()
 
     for category in CATEGORIES:
-        category_dir = WIKI_DIR / category
+        category_dir = wiki_dir / category
 
         if not category_dir.exists():
             continue
@@ -75,7 +75,7 @@ def find_orphans(verbose: bool = False):
 
             for orphan in orphan_pages:
                 orphan_count += 1
-                rel_path = orphan.relative_to(WIKI_DIR)
+                rel_path = orphan.relative_to(wiki_dir)
 
                 if verbose:
                     print(f"- {rel_path}")
@@ -93,8 +93,33 @@ def find_orphans(verbose: bool = False):
     return orphan_count
 
 def main():
-    verbose = "--verbose" in sys.argv or "-v" in sys.argv
-    find_orphans(verbose)
+    wiki_dir = None
+    verbose = False
+
+    i = 1
+    while i < len(sys.argv):
+        arg = sys.argv[i]
+        if arg.startswith("--wiki-dir="):
+            wiki_dir = Path(arg.split("=", 1)[1])
+        elif arg == "--wiki-dir" and i + 1 < len(sys.argv):
+            wiki_dir = Path(sys.argv[i + 1])
+            i += 1
+        elif arg in ["--verbose", "-v"]:
+            verbose = True
+        i += 1
+
+    if not wiki_dir:
+        print("Usage: python scripts/list_orphans.py --wiki-dir=<path> [--verbose]")
+        print("Example: python scripts/list_orphans.py --wiki-dir=../wiki --verbose")
+        print("")
+        print("ERROR: --wiki-dir is REQUIRED. Points to the wiki directory containing category folders.")
+        sys.exit(1)
+
+    if not wiki_dir.exists():
+        print(f"ERROR: Wiki directory not found: {wiki_dir}")
+        sys.exit(1)
+
+    find_orphans(wiki_dir, verbose)
 
 if __name__ == "__main__":
     main()

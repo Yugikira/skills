@@ -3,13 +3,16 @@
 Find broken [[filename]] wikilinks across all markdown files.
 
 Usage:
-    python Scripts/check_wikilinks.py [--report broken_links.txt]
+    python scripts/check_wikilinks.py --root-dir=<path> [--report broken_links.txt]
+    python scripts/check_wikilinks.py --root-dir=.. --report broken_links.txt
 
 This script:
     - Scans all .md files in wiki/, source/summary/, source/conversations/
     - Extracts all [[link]] patterns
     - Checks if target file exists
     - Reports broken links with source file and line number
+
+Note: --root-dir is REQUIRED. Points to the directory containing source/ and wiki/.
 """
 
 import os
@@ -23,15 +26,6 @@ if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-SCRIPT_DIR = Path(__file__).parent
-ROOT_DIR = SCRIPT_DIR.parent.parent
-
-# Directories to scan for markdown files
-SCAN_DIRS = [
-    ROOT_DIR / "wiki",
-    ROOT_DIR / "source" / "summary",
-    ROOT_DIR / "source" / "conversations"
-]
 
 def find_wikilinks(content: str) -> list:
     """Extract all [[link]] patterns from content with line numbers."""
@@ -50,7 +44,7 @@ def find_wikilinks(content: str) -> list:
 
     return links
 
-def resolve_link_target(link: str, source_file: Path) -> Path:
+def resolve_link_target(link: str, source_file: Path, root_dir: Path) -> Path:
     """Resolve a wikilink target to an actual file path."""
     # Remove any display text after | if present
     target = link.split("|")[0]
@@ -58,28 +52,36 @@ def resolve_link_target(link: str, source_file: Path) -> Path:
     # Handle relative paths with slashes
     if "/" in target:
         # Path like "concepts/market_efficiency" - resolve from wiki/
-        return ROOT_DIR / "wiki" / f"{target}.md"
+        return root_dir / "wiki" / f"{target}.md"
     elif target.startswith("raw/"):
-        return ROOT_DIR / f"{target}"
+        return root_dir / f"{target}"
     elif target.startswith("source/"):
-        return ROOT_DIR / f"{target}.md"
+        return root_dir / f"{target}.md"
     else:
         # Bare link like "market_efficiency" - check wiki categories
         for category in ["concepts", "theories", "variables", "methods"]:
-            candidate = ROOT_DIR / "wiki" / category / f"{target}.md"
+            candidate = root_dir / "wiki" / category / f"{target}.md"
             if candidate.exists():
                 return candidate
 
         # Also check wiki root
-        return ROOT_DIR / "wiki" / f"{target}.md"
+        return root_dir / "wiki" / f"{target}.md"
 
-def check_wikilinks(report_file: str = None):
+def check_wikilinks(root_dir: Path, report_file: str = None):
     """Check all wikilinks and report broken ones."""
+
+    # Directories to scan for markdown files
+    scan_dirs = [
+        root_dir / "wiki",
+        root_dir / "source" / "summary",
+        root_dir / "source" / "conversations"
+    ]
+
     broken_links = defaultdict(list)
     total_links = 0
     broken_count = 0
 
-    for scan_dir in SCAN_DIRS:
+    for scan_dir in scan_dirs:
         if not scan_dir.exists():
             continue
 
@@ -93,7 +95,7 @@ def check_wikilinks(report_file: str = None):
 
                 for link_info in links:
                     total_links += 1
-                    target_path = resolve_link_target(link_info["target"], md_file)
+                    target_path = resolve_link_target(link_info["target"], md_file, root_dir)
 
                     if not target_path.exists():
                         broken_count += 1
@@ -115,7 +117,7 @@ def check_wikilinks(report_file: str = None):
         output_lines.append("")
 
         for source_file, links in sorted(broken_links.items()):
-            rel_path = source_file.relative_to(ROOT_DIR)
+            rel_path = source_file.relative_to(root_dir)
             output_lines.append(f"### {rel_path}")
 
             for link in links:
@@ -135,15 +137,36 @@ def check_wikilinks(report_file: str = None):
     return broken_count
 
 def main():
+    root_dir = None
     report_file = None
 
-    for arg in sys.argv:
-        if arg.startswith("--report="):
+    i = 1
+    while i < len(sys.argv):
+        arg = sys.argv[i]
+        if arg.startswith("--root-dir="):
+            root_dir = Path(arg.split("=", 1)[1])
+        elif arg == "--root-dir" and i + 1 < len(sys.argv):
+            root_dir = Path(sys.argv[i + 1])
+            i += 1
+        elif arg.startswith("--report="):
             report_file = arg.split("=", 1)[1]
-        elif arg == "--report" and len(sys.argv) > sys.argv.index(arg) + 1:
-            report_file = sys.argv[sys.argv.index(arg) + 1]
+        elif arg == "--report" and i + 1 < len(sys.argv):
+            report_file = sys.argv[i + 1]
+            i += 1
+        i += 1
 
-    check_wikilinks(report_file)
+    if not root_dir:
+        print("Usage: python scripts/check_wikilinks.py --root-dir=<path> [--report <file>]")
+        print("Example: python scripts/check_wikilinks.py --root-dir=.. --report broken_links.txt")
+        print("")
+        print("ERROR: --root-dir is REQUIRED. Points to directory containing source/ and wiki/.")
+        sys.exit(1)
+
+    if not root_dir.exists():
+        print(f"ERROR: Root directory not found: {root_dir}")
+        sys.exit(1)
+
+    check_wikilinks(root_dir, report_file)
 
 if __name__ == "__main__":
     main()

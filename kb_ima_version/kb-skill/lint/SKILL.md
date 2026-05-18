@@ -17,7 +17,9 @@ Run periodic health checks on the Knowledge Base wiki.
 
 ### Check 1: Broken Wikilinks
 
-Run: `python scripts/check_wikilinks.py`
+Run: `python scripts/check_wikilinks.py --root-dir={root_dir}`
+
+Where `{root_dir}` is the directory containing `source/` and `wiki/` (relative or absolute).
 
 Scans all [[link]] references and verifies target files exist.
 
@@ -28,7 +30,9 @@ Scans all [[link]] references and verifies target files exist.
 
 ### Check 2: Orphan Pages
 
-Run: `python scripts/list_orphans.py --verbose`
+Run: `python scripts/list_orphans.py --wiki-dir={wiki_dir} [--verbose]`
+
+Where `{wiki_dir}` is the path to your wiki directory.
 
 Finds wiki pages not referenced in any `_index.md`.
 

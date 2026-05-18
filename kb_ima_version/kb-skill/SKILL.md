@@ -64,6 +64,64 @@ Requires Python 3.8+. Verify before use:
 python --version
 ```
 
+## Pre-Flight: IMA Tool Availability
+
+**Check ONCE at skill entry. Result passed to all downstream modules.**
+
+```bash
+# Test if ima_api actually works (not just file existence)
+ima_api "openapi/wiki/v1/search_knowledge_base" '{"query": "", "cursor": "", "limit": 1}' 2>/dev/null
+```
+
+| Exit Code | Output Contains | IMA_AVAILABLE | Meaning |
+|-----------|-----------------|---------------|---------|
+| 0 | `"info_list"` | **true** | Tool works, KBs may exist |
+| 0 | `"error"` or empty | **false** | Tool exists but not configured |
+| non-zero | anything | **false** | Tool not installed or broken |
+
+**Decision Flow**:
+
+```
+┌────────────────────────────────────────┐
+│ ima_api "openapi/wiki/v1/search_knowledge_base" │
+└────────────────────────────────────────┘
+              │
+              ▼
+       ┌──────────────┐
+       │ Exit code 0? │
+       └──────────────┘
+         │         │
+        YES        NO
+         │         │
+         ▼         ▼
+   ┌──────────┐  ┌────────────────────────────────┐
+   │ Contains │  │ IMA_AVAILABLE = false          │
+   │ info_list│  │ → Use file-based fallback      │
+   │ in output│  │ → Prompt user if sync needed   │
+   └──────────┘  └────────────────────────────────┘
+         │
+         ▼
+   ┌────────────────────────────┐
+   │ IMA_AVAILABLE = true       │
+   │ → Proceed to check KBs     │
+   │ → Pass flag to all modules │
+   └────────────────────────────┘
+```
+
+**How Modules Use IMA_AVAILABLE Flag**:
+
+| Module | Receives Flag From | Behavior |
+|--------|-------------------|----------|
+| `ingest` | kb-skill dispatcher | Passes to subagent prompt; Phase 4, 7 skip re-check |
+| `wiki` | ingest subagent | Pre-Creation uses passed flag, no standalone check |
+| `query` | kb-skill dispatcher | Uses passed flag for search method selection |
+| `extract` | ingest subagent | No IMA calls (extraction is file-based) |
+
+**Orchestrator Responsibility**: When dispatching to any module or subagent, include this line in the prompt:
+```
+IMA_AVAILABLE: {true/false}  (from kb-skill pre-flight check)
+```
+
 ## IMA Knowledge Base Integration
 
 This skill uses **ima-skill** for semantic search. Before searching wiki content, verify the required IMA knowledge bases exist.

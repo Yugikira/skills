@@ -3,13 +3,16 @@
 Regenerate all _index.md files from wiki directory structure.
 
 Usage:
-    python Scripts/update_indexes.py [--dry-run]
+    python scripts/update_indexes.py --wiki-dir=<path> [--dry-run]
+    python scripts/update_indexes.py --wiki-dir=../wiki --dry-run
 
 This script:
     - Scans wiki/concepts/, wiki/theories/, wiki/variables/, wiki/methods/
     - Reads YAML frontmatter from each .md file for metadata
     - Generates _index.md with one-line summaries from frontmatter
     - Updates wiki/_index.md master index
+
+Note: --wiki-dir is REQUIRED. No default path to ensure explicit configuration.
 """
 
 import os
@@ -17,8 +20,6 @@ import re
 import sys
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).parent
-WIKI_DIR = SCRIPT_DIR.parent.parent / "wiki"  # Points to skills/wiki/ (main wiki)
 
 def parse_frontmatter(content: str) -> dict:
     """Parse YAML frontmatter from markdown content."""
@@ -141,13 +142,13 @@ def generate_master_index(stats: dict) -> str:
 
     return "\n".join(lines) + "\n"
 
-def update_indexes(dry_run: bool = False):
+def update_indexes(wiki_dir: Path, dry_run: bool = False):
     """Update all index files."""
     categories = ["concepts", "constructs", "theories", "variables", "methods"]
     stats = {}
 
     for category in categories:
-        category_dir = WIKI_DIR / category
+        category_dir = wiki_dir / category
         pages = scan_category(category_dir)
         stats[category] = len(pages)
 
@@ -163,23 +164,48 @@ def update_indexes(dry_run: bool = False):
             print(f"Updated: {index_file}")
 
     master_content = generate_master_index(stats)
-    master_file = WIKI_DIR / "_index.md"
+    master_file = wiki_dir / "_index.md"
 
     if dry_run:
         print(f"\n=== {master_file} ===")
         print(master_content)
     else:
-        WIKI_DIR.mkdir(parents=True, exist_ok=True)
+        wiki_dir.mkdir(parents=True, exist_ok=True)
         master_file.write_text(master_content, encoding="utf-8")
         print(f"Updated: {master_file}")
 
 def main():
-    dry_run = "--dry-run" in sys.argv
+    wiki_dir = None
+    dry_run = False
+
+    i = 1
+    while i < len(sys.argv):
+        arg = sys.argv[i]
+        if arg.startswith("--wiki-dir="):
+            wiki_dir = Path(arg.split("=", 1)[1])
+        elif arg == "--wiki-dir" and i + 1 < len(sys.argv):
+            wiki_dir = Path(sys.argv[i + 1])
+            i += 1
+        elif arg == "--dry-run":
+            dry_run = True
+        i += 1
+
+    if not wiki_dir:
+        print("Usage: python scripts/update_indexes.py --wiki-dir=<path> [--dry-run]")
+        print("Example: python scripts/update_indexes.py --wiki-dir=../wiki --dry-run")
+        print("")
+        print("ERROR: --wiki-dir is REQUIRED. No default path.")
+        sys.exit(1)
+
+    if not wiki_dir.exists():
+        print(f"ERROR: Wiki directory not found: {wiki_dir}")
+        sys.exit(1)
 
     if dry_run:
         print("Dry run mode - showing generated indexes without writing")
+        print(f"Wiki directory: {wiki_dir}")
 
-    update_indexes(dry_run)
+    update_indexes(wiki_dir, dry_run)
 
 if __name__ == "__main__":
     main()

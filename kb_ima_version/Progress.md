@@ -44,3 +44,40 @@ Extended to management science/marketing. Created paper type templates (archival
 
 - `kb-skill/ingest/SKILL.md` - Role Division (lines 10-17), ORCHESTRATOR RESTRICTIONS, Agent Prompt restructure, Phase 4 hybrid review, Phase 1/2 fallbacks
 - `kb-skill/extract/SKILL.md` - WHO DETERMINES TYPE note (subagent determines)
+
+### Task 8: Streamline IMA integration with single pre-flight check (2026-05-18)
+
+Based on user feedback that agents skip IMA steps without verifying tool availability.
+
+**Root cause**: Each integration point (Phase 7, Phase 4.3, kb-wiki Pre-Creation, kb-query) had redundant IMA checks, leading to 4+ checks per ingestion.
+
+**Solution**: Single pre-flight check at root dispatcher (`kb-skill/SKILL.md`), pass status to all downstream modules.
+
+**Implementation**:
+1. Add Pre-Flight Check to `kb-skill/SKILL.md` - actual `ima_api` call to verify functionality
+2. Update `kb-skill/ingest/SKILL.md` - pass IMA_AVAILABLE flag to subagent; Phase 4, 7 use passed flag
+3. Update `kb-skill/wiki/SKILL.md` - remove standalone tool check, use passed flag
+4. Update `kb-skill/query/SKILL.md` - use passed flag from dispatcher
+5. Fix all scripts to accept required `--wiki-dir` or `--root-dir` parameters (no default paths)
+
+## Files Modified in Task 8
+
+- `kb-skill/SKILL.md` - Added Pre-Flight Check section with ima_api call test, decision flow diagram
+- `kb-skill/ingest/SKILL.md` - Added IMA_AVAILABLE context flag to subagent prompt; Phase 4.3 and Phase 7 use passed flag
+- `kb-skill/wiki/SKILL.md` - Removed standalone tool check, added Step 0 for using passed flag; fixed fallback logic to index-first approach (Read entire index for semantic check)
+- `kb-skill/query/SKILL.md` - Removed standalone IMA check, uses passed flag; fixed fallback logic to Grep-first approach for keyword search
+- `kb-skill/extract/references/review_extract_guidance.md` - Fixed concept existence check to use Grep (token-efficient for single concept lookup)
+- `kb-skill/ingest/scripts/update_indexes.py` - Added required `--wiki-dir` parameter
+- `kb-skill/ingest/scripts/check_new_page_collision.py` - Added required `--wiki-dir` parameter
+- `kb-skill/ingest/scripts/check_related_papers.py` - Added required `--root-dir` parameter
+- `kb-skill/wiki/scripts/check_wiki_collision.py` - Added required `--wiki-dir` parameter
+- `kb-skill/lint/scripts/check_wikilinks.py` - Added required `--root-dir` parameter
+- `kb-skill/lint/scripts/list_orphans.py` - Added required `--wiki-dir` parameter
+- `kb-skill/lint/SKILL.md` - Updated script call syntax with required parameters
+
+**Note on fallback logic fix**: Original design reads `_index.md` first to get structured entry list, then reads specific candidate pages. Initial edits simplified this to Glob/Read directly - now corrected to follow index-first approach.
+
+**Refined by use case**:
+- **Semantic duplicate check (kb-wiki)**: Read entire `_index.md` (need ALL entries for comparison) ✓
+- **Keyword query (kb-query)**: Grep `_index.md` first (need only matching entries) - more token-efficient ✓
+- **Existence check (review_extract)**: Grep for specific concept name (only need yes/no answer) ✓

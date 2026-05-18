@@ -3,8 +3,8 @@
 Check if related papers are in wiki database and suggest links.
 
 Usage:
-    python Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md
-    python Scripts/check_related_papers.py --summary source/summary/{citekey}_summary.md --update
+    python scripts/check_related_papers.py --root-dir=<path> --summary source/summary/{citekey}_summary.md [--update]
+    python scripts/check_related_papers.py --root-dir=.. --summary source/summary/gao_2026_summary.md --update
 
 This script:
     - Reads Related Papers table from summary (extracts Title column)
@@ -14,16 +14,14 @@ This script:
     - With --update flag: modifies the summary file to fill Wiki Link column
 
 Matching strategy: Title-based (not citekey) because citekey formats vary.
+
+Note: --root-dir is REQUIRED. Points to the directory containing source/ and wiki/.
 """
 
 import os
 import re
 import sys
 from pathlib import Path
-
-SCRIPT_DIR = Path(__file__).parent
-ROOT_DIR = SCRIPT_DIR.parent.parent
-SUMMARY_DIR = ROOT_DIR / "source" / "summary"
 
 
 def normalize_title(title: str) -> str:
@@ -71,17 +69,17 @@ def parse_frontmatter(content: str) -> dict:
     return metadata
 
 
-def build_title_index() -> dict:
+def build_title_index(summary_dir: Path) -> dict:
     """
     Build index of all titles in wiki database.
     Returns: {normalized_title: citekey}
     """
     title_index = {}
 
-    if not SUMMARY_DIR.exists():
+    if not summary_dir.exists():
         return title_index
 
-    for summary_file in SUMMARY_DIR.glob("*_summary.md"):
+    for summary_file in summary_dir.glob("*_summary.md"):
         try:
             content = summary_file.read_text(encoding="utf-8")
             frontmatter = parse_frontmatter(content)
@@ -219,32 +217,55 @@ def update_summary_wiki_links(summary_path: Path, results: list) -> None:
 
 
 def main():
+    root_dir = None
     summary_file = None
     update_mode = False
 
-    for arg in sys.argv:
-        if arg.startswith("--summary="):
+    i = 1
+    while i < len(sys.argv):
+        arg = sys.argv[i]
+        if arg.startswith("--root-dir="):
+            root_dir = Path(arg.split("=", 1)[1])
+        elif arg == "--root-dir" and i + 1 < len(sys.argv):
+            root_dir = Path(sys.argv[i + 1])
+            i += 1
+        elif arg.startswith("--summary="):
             summary_file = arg.split("=", 1)[1]
-        elif arg == "--summary" and len(sys.argv) > sys.argv.index(arg) + 1:
-            summary_file = sys.argv[sys.argv.index(arg) + 1]
+        elif arg == "--summary" and i + 1 < len(sys.argv):
+            summary_file = sys.argv[i + 1]
+            i += 1
         elif arg == "--update":
             update_mode = True
+        i += 1
+
+    if not root_dir:
+        print("Usage: python scripts/check_related_papers.py --root-dir=<path> --summary {summary_file} [--update]")
+        print("Example: python scripts/check_related_papers.py --root-dir=.. --summary source/summary/gao_2026_summary.md --update")
+        print("")
+        print("ERROR: --root-dir is REQUIRED. Points to directory containing source/ and wiki/.")
+        sys.exit(1)
+
+    if not root_dir.exists():
+        print(f"ERROR: Root directory not found: {root_dir}")
+        sys.exit(1)
+
+    summary_dir = root_dir / "source" / "summary"
 
     if not summary_file:
-        print("Usage: python Scripts/check_related_papers.py --summary {summary_file} [--update]")
-        print("Example: python Scripts/check_related_papers.py --summary source/summary/gao_2026_summary.md --update")
+        print("Usage: python scripts/check_related_papers.py --root-dir=<path> --summary {summary_file} [--update]")
+        print("ERROR: --summary is REQUIRED.")
         sys.exit(1)
 
     summary_path = Path(summary_file)
     if not summary_path.exists():
-        summary_path = ROOT_DIR / summary_file
+        summary_path = root_dir / summary_file
         if not summary_path.exists():
             print(f"Error: Summary file not found: {summary_file}")
             sys.exit(1)
 
     # Build title index from all summaries
     print("Building title index from wiki database...")
-    title_index = build_title_index()
+    title_index = build_title_index(summary_dir)
     print(f"Found {len(title_index)} papers in wiki")
 
     # Check related papers

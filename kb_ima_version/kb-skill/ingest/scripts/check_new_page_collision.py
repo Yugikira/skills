@@ -7,7 +7,8 @@ this script runs AFTER wiki pages are created. It excludes the newly created pag
 "existing" pool so the orchestrator can find genuinely pre-existing pages that should be merged.
 
 Usage:
-    python Scripts/check_new_page_collision.py --new-pages new_pages.json --json
+    python scripts/check_new_page_collision.py --wiki-dir=<path> --new-pages new_pages.json [--json]
+    python scripts/check_new_page_collision.py --wiki-dir=../wiki --new-pages new_pages.json --json
 
 Input JSON format (new_pages.json):
 {
@@ -24,6 +25,8 @@ Output JSON:
     ...
     "_summary": {"total_new": N, "exact_matches": N, "needs_review": N, "no_collision": N}
 }
+
+Note: --wiki-dir is REQUIRED. No default path to ensure explicit configuration.
 """
 
 import os
@@ -31,10 +34,6 @@ import re
 import sys
 import json
 from pathlib import Path
-
-SCRIPT_DIR = Path(__file__).parent
-ROOT_DIR = SCRIPT_DIR.parent.parent
-WIKI_DIR = ROOT_DIR / "wiki"
 
 CATEGORIES = ["concepts", "variables", "constructs", "methods", "theories"]
 
@@ -76,9 +75,9 @@ def keyword_overlap_score(text1: str, text2: str) -> float:
     return len(intersection) / len(union) if union else 0.0
 
 
-def parse_index_md(category: str) -> list:
+def parse_index_md(category: str, wiki_dir: Path) -> list:
     """Parse wiki/{category}/_index.md to get existing entries."""
-    index_path = WIKI_DIR / category / "_index.md"
+    index_path = wiki_dir / category / "_index.md"
     if not index_path.exists():
         return []
 
@@ -119,9 +118,9 @@ def parse_index_md(category: str) -> list:
     return entries
 
 
-def read_wiki_page_definition(category: str, page_name: str) -> str:
+def read_wiki_page_definition(category: str, page_name: str, wiki_dir: Path) -> str:
     """Read the Definition section from a wiki page."""
-    page_path = WIKI_DIR / category / f"{page_name}.md"
+    page_path = wiki_dir / category / f"{page_name}.md"
     if not page_path.exists():
         return ""
 
@@ -181,7 +180,7 @@ def find_similar_candidates(proposed: str, definition: str, existing: list, thre
     return candidates
 
 
-def check_collisions(new_pages: dict) -> dict:
+def check_collisions(new_pages: dict, wiki_dir: Path) -> dict:
     """Check newly created pages against pre-existing entries (excluding the new ones)."""
     report = {}
 
@@ -191,14 +190,14 @@ def check_collisions(new_pages: dict) -> dict:
             report[category] = []
             continue
 
-        existing = parse_index_md(category)
+        existing = parse_index_md(category, wiki_dir)
         # Exclude newly created pages from existing pool
         new_norm = {normalize_name(n) for n in new_names}
         pre_existing = [e for e in existing if normalize_name(e["name"]) not in new_norm]
 
         category_results = []
         for page_name in new_names:
-            definition = read_wiki_page_definition(category, page_name)
+            definition = read_wiki_page_definition(category, page_name, wiki_dir)
             exact_match = find_exact_match(page_name, pre_existing)
 
             if exact_match:
@@ -234,33 +233,47 @@ def check_collisions(new_pages: dict) -> dict:
 
 
 def main():
+    wiki_dir = None
     new_pages_file = None
     output_json = False
 
     i = 1
     while i < len(sys.argv):
         arg = sys.argv[i]
-        if arg.startswith("--new-pages="):
+        if arg.startswith("--wiki-dir="):
+            wiki_dir = Path(arg.split("=", 1)[1])
+        elif arg == "--wiki-dir" and i + 1 < len(sys.argv):
+            wiki_dir = Path(sys.argv[i + 1])
+            i += 1
+        elif arg.startswith("--new-pages="):
             new_pages_file = arg.split("=", 1)[1]
-        elif arg == "--new-pages":
-            if i + 1 < len(sys.argv):
-                new_pages_file = sys.argv[i + 1]
-                i += 1
+        elif arg == "--new-pages" and i + 1 < len(sys.argv):
+            new_pages_file = sys.argv[i + 1]
+            i += 1
         elif arg == "--json":
             output_json = True
         i += 1
 
+    if not wiki_dir:
+        print("Usage: python scripts/check_new_page_collision.py --wiki-dir=<path> --new-pages <json_file> [--json]")
+        print("Example: python scripts/check_new_page_collision.py --wiki-dir=../wiki --new-pages new_pages.json --json")
+        print("")
+        print("ERROR: --wiki-dir is REQUIRED. No default path.")
+        sys.exit(1)
+
+    if not wiki_dir.exists():
+        print(f"ERROR: Wiki directory not found: {wiki_dir}", file=sys.stderr)
+        sys.exit(1)
+
     if not new_pages_file:
-        print("Usage: python Scripts/check_new_page_collision.py --new-pages <json_file> [--json]")
-        print("Example: python Scripts/check_new_page_collision.py --new-pages new_pages.json --json")
+        print("Usage: python scripts/check_new_page_collision.py --wiki-dir=<path> --new-pages <json_file> [--json]")
+        print("ERROR: --new-pages is REQUIRED.")
         sys.exit(1)
 
     new_pages_path = Path(new_pages_file)
     if not new_pages_path.exists():
-        new_pages_path = ROOT_DIR / new_pages_file
-        if not new_pages_path.exists():
-            print(f"Error: New pages JSON file not found: {new_pages_file}", file=sys.stderr)
-            sys.exit(1)
+        print(f"Error: New pages JSON file not found: {new_pages_file}", file=sys.stderr)
+        sys.exit(1)
 
     try:
         new_pages = json.loads(new_pages_path.read_text(encoding="utf-8"))
@@ -268,7 +281,7 @@ def main():
         print(f"Error: Could not parse JSON: {e}", file=sys.stderr)
         sys.exit(1)
 
-    report = check_collisions(new_pages)
+    report = check_collisions(new_pages, wiki_dir)
 
     if output_json:
         print(json.dumps(report, indent=2))

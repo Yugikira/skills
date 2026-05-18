@@ -125,6 +125,13 @@ Dispatch a SINGLE subagent. **CRITICAL**: This agent must complete ALL work itse
 ```
 Agent prompt for extraction subagent:
 ---
+## CONTEXT FLAGS (orchestrator provides)
+
+**IMA_AVAILABLE**: {true/false}  ← Orchestrator fills this from kb-skill pre-flight check
+
+**If IMA_AVAILABLE=true**: Use ima_api for semantic duplicate check before creating wiki pages.
+**If IMA_AVAILABLE=false**: Use file-based fallback (Glob wiki/{category}/*.md + Read for comparison).
+
 ## YOUR TASK (subagent reads all files itself)
 
 **INPUT** (orchestrator provides):
@@ -203,22 +210,25 @@ This is a **output review** — verify subagent followed templates, not re-read 
 
 **Purpose**: Check newly created pages against **pre-existing** wiki entries (from before this ingestion). The subagent already created the pages — now we check if any should be merged into older existing pages.
 
-**Step 0: IMA Knowledge Base Check**
+**Step 0: Use IMA_AVAILABLE Flag** (already verified in kb-skill pre-flight)
 
-Before collision detection, verify IMA KBs exist:
+Use `IMA_AVAILABLE` flag from root dispatcher — **no re-check needed**.
 
-1. Run: `ima_api "openapi/wiki/v1/search_knowledge_base" '{"query": "", "cursor": "", "limit": 20}'`
-2. Check for KBs: `concepts`, `variables`, `methods`, `constructs`, `theories`
+| IMA_AVAILABLE | Method |
+|---------------|--------|
+| **true** | Primary: IMA KB search for semantic duplicates |
+| **false** | Fallback: `python scripts/check_new_page_collision.py --new-pages /tmp/new_pages_{citekey}.json --json` |
 
-**If KBs missing**: Prompt user: "请在IMA桌面客户端创建以下知识库并上传对应文件: {missing_kbs}"
+**If IMA_AVAILABLE=true**: Proceed to Step 1 (IMA KB Check below).
+**If IMA_AVAILABLE=false**: Skip IMA KB Check, use fallback script directly.
 
 **Step 1: Collect New Pages from Subagent Output**
 
 From the subagent's return value, collect all created wiki page names by category. For batch (multiple papers), collect all pages from all papers combined.
 
-**Step 2: Collision Detection**
+**Step 2: Collision Detection (method depends on IMA_AVAILABLE)**
 
-**Primary method (IMA KB available):**
+**If IMA_AVAILABLE=true (Primary method - IMA KB search):**
 
 For each new page in each category:
 ```bash
@@ -230,7 +240,7 @@ ima_api "openapi/wiki/v1/search_knowledge" '{"query": "{page_name}", "knowledge_
 - Review `highlight_content` for definition snippets
 - Cross-check across related categories (e.g., new variable vs existing concepts)
 
-**Fallback (IMA KB not available):**
+**If IMA_AVAILABLE=false (Fallback - file-based):**
 
 ```bash
 python scripts/check_new_page_collision.py --new-pages /tmp/new_pages_{citekey}.json --json
@@ -273,11 +283,13 @@ After all checks pass, proceed to Phase 5.
 
 ### Phase 5: Index Updates
 
-1. Run index updater with fallback:
+1. Run index updater with wiki directory:
    ```bash
-   python scripts/update_indexes.py
+   python scripts/update_indexes.py --wiki-dir={wiki_dir}
    ```
-2. Updates all _index.md files
+   Where `{wiki_dir}` is the path to your wiki directory (relative or absolute).
+
+2. Updates all _index.md files in wiki categories.
 
 ### Phase 6: Log Entry and Consolidation Trigger
 
@@ -298,6 +310,19 @@ After all checks pass, proceed to Phase 5.
 ### Phase 7: IMA Knowledge Base Sync
 
 Sync newly created files to IMA knowledge bases for semantic search capability.
+
+**Step 0: Use IMA_AVAILABLE Flag** (already verified in kb-skill pre-flight)
+
+| IMA_AVAILABLE | Action |
+|---------------|--------|
+| **true** | Proceed to Step 1 (check KB availability) |
+| **false** | Output: "IMA skill not installed. Install ima-skill plugin to enable sync." → **END Phase 7** |
+
+**If IMA_AVAILABLE=false**: Skip entire Phase 7, no silent skipping.
+
+---
+
+**Steps below only execute if IMA_AVAILABLE=true:**
 
 **Step 1: Check IMA KB Availability**
 

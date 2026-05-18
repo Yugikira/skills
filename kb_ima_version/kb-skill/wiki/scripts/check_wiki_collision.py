@@ -3,7 +3,8 @@
 Check proposed wiki entries against existing entries for potential duplicates.
 
 Usage:
-    python Scripts/check_wiki_collision.py --summary source/summary/{citekey}_summary.md
+    python scripts/check_wiki_collision.py --wiki-dir=<path> --summary source/summary/{citekey}_summary.md [--json]
+    python scripts/check_wiki_collision.py --wiki-dir=../wiki --summary source/summary/gao_2026_summary.md --json
 
 This script:
     - Reads Concepts Defined and Measures/Variables tables from summary
@@ -21,6 +22,8 @@ Output JSON:
 }
 
 Matching strategy: Name-based (normalized) + definition keyword overlap scoring.
+
+Note: --wiki-dir is REQUIRED. No default path to ensure explicit configuration.
 """
 
 import os
@@ -28,10 +31,6 @@ import re
 import sys
 import json
 from pathlib import Path
-
-SCRIPT_DIR = Path(__file__).parent
-ROOT_DIR = SCRIPT_DIR.parent.parent
-WIKI_DIR = ROOT_DIR / "wiki"
 
 CATEGORIES = ["concepts", "variables", "constructs", "methods", "theories"]
 
@@ -58,12 +57,12 @@ def normalize_name(name: str) -> str:
     return name
 
 
-def parse_index_md(category: str) -> list:
+def parse_index_md(category: str, wiki_dir: Path) -> list:
     """
     Parse wiki/{category}/_index.md to get existing entries.
     Returns: [{name, title, domain, first_source}, ...]
     """
-    index_path = WIKI_DIR / category / "_index.md"
+    index_path = wiki_dir / category / "_index.md"
     if not index_path.exists():
         return []
 
@@ -319,7 +318,7 @@ def extract_summary_tables(content: str) -> dict:
     return tables
 
 
-def check_collisions(summary_path: Path) -> dict:
+def check_collisions(summary_path: Path, wiki_dir: Path) -> dict:
     """
     Check proposed wiki entries against existing entries.
     Returns: collision report dict
@@ -337,7 +336,7 @@ def check_collisions(summary_path: Path) -> dict:
     report = {}
 
     for category in CATEGORIES:
-        existing = parse_index_md(category)
+        existing = parse_index_md(category, wiki_dir)
         proposed_list = []
 
         # Get proposed entries for this category
@@ -390,34 +389,54 @@ def check_collisions(summary_path: Path) -> dict:
 
 
 def main():
+    wiki_dir = None
     summary_file = None
     output_json = False
 
-    for arg in sys.argv:
-        if arg.startswith("--summary="):
+    i = 1
+    while i < len(sys.argv):
+        arg = sys.argv[i]
+        if arg.startswith("--wiki-dir="):
+            wiki_dir = Path(arg.split("=", 1)[1])
+        elif arg == "--wiki-dir" and i + 1 < len(sys.argv):
+            wiki_dir = Path(sys.argv[i + 1])
+            i += 1
+        elif arg.startswith("--summary="):
             summary_file = arg.split("=", 1)[1]
-        elif arg == "--summary" and len(sys.argv) > sys.argv.index(arg) + 1:
-            summary_file = sys.argv[sys.argv.index(arg) + 1]
+        elif arg == "--summary" and i + 1 < len(sys.argv):
+            summary_file = sys.argv[i + 1]
+            i += 1
         elif arg == "--json":
             output_json = True
+        i += 1
+
+    if not wiki_dir:
+        print("Usage: python scripts/check_wiki_collision.py --wiki-dir=<path> --summary {summary_file} [--json]")
+        print("Example: python scripts/check_wiki_collision.py --wiki-dir=../wiki --summary source/summary/gao_2026_summary.md --json")
+        print("")
+        print("ERROR: --wiki-dir is REQUIRED. No default path.")
+        sys.exit(1)
+
+    if not wiki_dir.exists():
+        print(f"ERROR: Wiki directory not found: {wiki_dir}")
+        sys.exit(1)
 
     if not summary_file:
-        print("Usage: python Scripts/check_wiki_collision.py --summary {summary_file} [--json]")
-        print("Example: python Scripts/check_wiki_collision.py --summary source/summary/gao_2026_summary.md --json")
+        print("Usage: python scripts/check_wiki_collision.py --wiki-dir=<path> --summary {summary_file} [--json]")
+        print("ERROR: --summary is REQUIRED.")
         sys.exit(1)
 
     summary_path = Path(summary_file)
     if not summary_path.exists():
-        summary_path = ROOT_DIR / summary_file
-        if not summary_path.exists():
-            print(f"Error: Summary file not found: {summary_file}")
-            sys.exit(1)
+        print(f"Error: Summary file not found: {summary_file}")
+        sys.exit(1)
 
     if not output_json:
         print(f"Checking wiki collisions for: {summary_path}")
+        print(f"Wiki directory: {wiki_dir}")
 
     # Run collision check
-    report = check_collisions(summary_path)
+    report = check_collisions(summary_path, wiki_dir)
 
     # Output results
     if output_json:

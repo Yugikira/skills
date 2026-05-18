@@ -375,39 +375,74 @@ For analytical models:
 
 **CRITICAL**: Before creating ANY new wiki page, you MUST check for semantic duplicates across ALL categories: concepts, variables, methods, constructs, theories.
 
-### Step 0: IMA Knowledge Base Check
+### Step 0: Use IMA_AVAILABLE Flag
 
-First, verify IMA knowledge bases are available:
+**IMA_AVAILABLE flag is passed from caller (kb-ingest orchestrator or kb-query dispatcher).**
 
-1. Read `kb-skill/SKILL.md` for required KB list
-2. Run: `ima_api "openapi/wiki/v1/search_knowledge_base" '{"query": "", "cursor": "", "limit": 20}'`
-3. Check if KB `{category}` exists (e.g., `concepts`, `variables`, `methods`, `constructs`, `theories`)
+- **If called by kb-ingest subagent**: Flag is in subagent prompt from orchestrator
+- **If called by kb-query**: Flag is passed from kb-skill dispatcher
+- **No standalone tool check needed** — use the passed flag
 
-**If KB missing**: Prompt user: "请在IMA桌面客户端创建知识库: {category}，并上传 wiki/{category}/ 目录下的所有 .md 文件。创建后重试。"
+| IMA_AVAILABLE | Method |
+|---------------|--------|
+| **true** | Primary: IMA KB semantic search |
+| **false** | Fallback: File-based search (Glob + Read) |
 
-**If KB exists**: Proceed to Step 1 using ima search.
+---
 
-### Step 1: Search Existing Pages via IMA
+### Step 1: Search Existing Pages (method depends on IMA_AVAILABLE)
+
+**If IMA_AVAILABLE=true (Primary method - IMA KB search):**
 
 For each page you plan to create:
 
-**Primary method (IMA KB available):**
 ```bash
 # Search within specific category KB
 ima_api "openapi/wiki/v1/search_knowledge" '{"query": "{page_name}", "knowledge_base_id": "{kb_id}", "cursor": ""}'
 ```
 
 - Use the page name as `query`
-- Use `{category}` KB's ID (from Step 0)
+- Use `{category}` KB's ID (from kb-skill pre-flight or KB list)
 - Review `highlight_content` in results for definition snippets
 - Check both exact matches and similar-name entries
 
-**Fallback (IMA KB not available):**
+**If IMA_AVAILABLE=false (Fallback - file-based search via _index.md):**
+
+**Step 1a: Read category index**
+
+First, read the `_index.md` for the target category to get structured entry list:
+
 ```bash
-# File-based search
-Glob wiki/{category}/*.md
-Read wiki/{category}/{similar_name}.md
+Read wiki/{category}/_index.md
 ```
+
+Parse the index table (format: `| [[Name]] | Title | Domain | First Source |`):
+- Extract `name` from wikilink (e.g., `[[concepts/market_efficiency]]` → `market_efficiency`)
+- Collect `title` for semantic comparison
+- This gives a structured overview without reading every file
+
+**Step 1b: Identify candidates from index**
+
+For each proposed page name:
+- Normalize name (lowercase, remove punctuation, replace underscores with spaces)
+- Check against normalized names in index for exact match
+- Check against titles for partial match (substring)
+- Collect candidate entries with similar names/titles
+
+**Step 1c: Read candidate pages for definition comparison**
+
+Only read specific candidate wiki pages when needed:
+
+```bash
+Read wiki/{category}/{candidate_name}.md
+```
+
+Extract Definition section for semantic comparison at phenomenon level.
+
+**Why index-first approach**:
+- `_index.md` provides structured metadata (name, title, domain) for all entries
+- More efficient than Globbing all files and reading each one
+- Script `scripts/check_wiki_collision.py` implements this logic
 
 ### Step 2: Category-Specific Semantic Rules
 

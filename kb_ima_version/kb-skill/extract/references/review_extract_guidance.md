@@ -23,8 +23,22 @@ Review → Check concept wiki → Create/Update concept wiki → NO full summary
 
 1. Identify the **core concept** the review paper is about
 2. Check if wiki page exists for the concept:
-   - Check `wiki/concepts/_index.md` OR
-   - Search IMA knowledge base `concepts`
+
+   **If IMA_AVAILABLE=true (from kb-skill pre-flight):**
+   ```bash
+   ima_api "openapi/wiki/v1/search_knowledge" '{"query": "{concept_name}", "knowledge_base_id": "concepts_kb_id", "cursor": ""}'
+   ```
+   - If `info_list` contains match → EXISTS
+   - If `info_list` empty → NOT EXISTS
+
+   **If IMA_AVAILABLE=false (file-based fallback):**
+   ```bash
+   Grep "{concept_name}" wiki/concepts/_index.md
+   ```
+   - If output contains `[[{concept_name}]]` → EXISTS
+   - If no output → NOT EXISTS, proceed to create
+
+   **Why Grep instead of Read**: For existence check, we only need to know if the specific concept is in the index. Grep returns only matching rows (0-1), while Read returns entire index (50+ entries).
 
 ### Step 2: Create Concept Page (If Not Exists)
 
